@@ -1,19 +1,20 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+// dllmain.cpp : Main Hooking Logic And Input Logic.
 #include "pch.h"
 #include <Windows.h>
 #include <cstdio>
 #include <iostream>
 #include "Detours/detours.h"
 #include "Structs.h"
+#include "HookHeaders.h"
+#include "mem.h"
 
 // Hacks Settings
 bool espEnabled = false;
 bool multiShotEnabled = false;
+int shotsPerBurst = 1;
+bool gunHacksEnabled = true;
 
 // SetOutlineActive
-typedef void(__fastcall* tSetOutlineActive)(void*, bool);
-tSetOutlineActive oSetOutlineActive;
-
 void __fastcall hkSetOutlineActive(void* pThis, bool active) {
 	std::cout << pThis << std::endl;
 	if (espEnabled) {
@@ -25,25 +26,36 @@ void __fastcall hkSetOutlineActive(void* pThis, bool active) {
 }
 
 // SetOutlineColor
-typedef void(__fastcall* tSetOutlineColor)(void*, Color);
-tSetOutlineColor oSetOutlineColor;
-
 void __fastcall hkSetOutlineColor(void* pThis, Color color) {
 	std::cout << color.r << " " << color.g << " " << color.b << " " << color.a << " " << std::endl;
 	oSetOutlineColor(pThis, color);
 }
 
 // Fire Weapon
-typedef void(__fastcall* tFireWeapon)(void*, void*, void*, void*);
-tFireWeapon oFireWeapon;
-
-void __fastcall hkFireWeapon(void* pThis, void* PlayerSource, void* forward, void* aiSourceId) {
+void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward, void* aiSourceId) {
+	//std::cout << "Weapon Object: " << (weapon) << std::endl;
+	// Infinite Ammo
+	bool* infAmmo = (bool*)(weapon + 0xAC);
+	// Rof
+	float* rof = (float*)(weapon + 0x98);
+	// No recoil
+	bool* noRcoil = (bool*)(weapon + 0xC3);
+	if (gunHacksEnabled) {
+		*infAmmo = 1;
+		*rof = 0.00001;
+		*noRcoil = 1;
+	}
+	else {
+		*infAmmo = 0;
+		*rof = 0.08;
+		*noRcoil = 0;
+	}
 	if (multiShotEnabled) {
-		for (int i = 0; i <= 5; i++) {
-			oFireWeapon(pThis, PlayerSource, forward, aiSourceId);
+		for (int i = shotsPerBurst - 1; i <= 5; i++) {
+			oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 		}
 	}
-	return oFireWeapon(pThis, PlayerSource, forward, aiSourceId);
+	return oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 }
 
 
@@ -52,13 +64,10 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	AllocConsole();
 	FILE* f;
 	freopen_s(&f, "CONOUT$", "w", stdout);
-	//freopen_s(&f, "CONIN$", "r", stdin);
+	freopen_s(&f, "CONIN$", "r", stdin);
 
-	//std::string espInput = "";
-	std::cout << "HackThread is running\n";
-	/*std::cout << "Enter True for ESP or False for no ESP" << std::endl;
-	std::cin >> espInput;
-	std::cout << espInput << std::endl;*/
+	std::cout << "HackThread is running" << std::endl;
+	std::cout << "Ready For Inputs" << std::endl;
 
 	while (true)
 	{
@@ -70,6 +79,15 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		else if (GetAsyncKeyState(VK_NUMPAD2) & 1) {
 			multiShotEnabled = !multiShotEnabled;
 			std::cout << "Multi Shot enabled: " << multiShotEnabled << std::endl;
+			if (multiShotEnabled) {
+				std::cout << "Enter Amount of Bullets Per Burst: ";
+				std::cin >> shotsPerBurst;
+				std::cout << "Shots Per Burst: " << shotsPerBurst << std::endl;
+			}
+		}
+		else if (GetAsyncKeyState(VK_NUMPAD3) & 1) {
+			gunHacksEnabled = !gunHacksEnabled;
+			std::cout << "Gun Hacks enabled: " << gunHacksEnabled << std::endl;
 		}
 		else if (GetAsyncKeyState(VK_NUMPAD0) & 1) {
 			break;
@@ -78,6 +96,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 
 	if (f) {
 		fclose(f);
+		fclose(stdout);
+		fclose(stdin);
 	}
 	FreeConsole();
 	FreeLibraryAndExitThread(hModule, 0);
@@ -108,7 +128,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		uintptr_t SetOutlineColor_offset = 0xE71830;
 		oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
-
+		
+		uintptr_t SetCurrentAmmo_offset = 0x2A9FE0;
+		oSetCurrentAmmo = (tSetCurrentAmmo)(assemblyAddress + SetCurrentAmmo_offset);
 
 		// Attach Detours
 		DetourTransactionBegin();

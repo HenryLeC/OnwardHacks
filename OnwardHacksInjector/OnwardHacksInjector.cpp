@@ -19,7 +19,6 @@ int main()
         injector.inject(wchar_dll);
 
         std::cout << "Injected Successfully!" << std::endl;
-        system("pause");
     }
     catch (const std::runtime_error& e) // To catch any exceptions
     {
