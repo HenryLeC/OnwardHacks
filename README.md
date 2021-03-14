@@ -3,7 +3,7 @@
 ## Features
 1. ESP
 2. 6 Round Burst
-3. Infinite Ammo
+3. Gun Hacks
 
 ## Instructions for use
 1. Run OnwardHacksInjector.exe while Onward is running

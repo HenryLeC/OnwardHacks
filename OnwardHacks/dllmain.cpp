@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <cstdio>
 #include <iostream>
+#include <map>
 #include "Detours/detours.h"
 #include "Structs.h"
 #include "HookHeaders.h"
@@ -12,11 +13,15 @@
 bool espEnabled = false;
 bool multiShotEnabled = false;
 int shotsPerBurst = 1;
-bool gunHacksEnabled = true;
+bool gunHacksEnabled = false;
+
+// Original Params
+std::map<uintptr_t, float> defaultDamage = {};
+std::map<uintptr_t, float> defaultRof = {};
 
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(void* pThis, bool active) {
-	std::cout << pThis << std::endl;
+	//std::cout << pThis << std::endl;
 	if (espEnabled) {
 		return oSetOutlineActive(pThis, true);
 	}
@@ -40,15 +45,26 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 	float* rof = (float*)(weapon + 0x98);
 	// No recoil
 	bool* noRcoil = (bool*)(weapon + 0xC3);
+	// Damage
+	float* damage = (float*)(weapon + 0xF8);
+
+	// Set Gun Params
+	if (defaultDamage.find(weapon) == defaultDamage.end()) {
+		defaultDamage[weapon] = *damage;
+		defaultRof[weapon] = *rof;
+	}
+
 	if (gunHacksEnabled) {
-		*infAmmo = 1;
+		*infAmmo = true;
 		*rof = 0.00001;
-		*noRcoil = 1;
+		*noRcoil = true;
+		*damage = 2000;
 	}
 	else {
-		*infAmmo = 0;
-		*rof = 0.08;
-		*noRcoil = 0;
+		*infAmmo = false;
+		*rof = defaultRof[weapon];
+		*damage = defaultDamage[weapon];
+		*noRcoil = false;
 	}
 	if (multiShotEnabled) {
 		for (int i = shotsPerBurst - 1; i <= 5; i++) {
@@ -58,6 +74,15 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 	return oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 }
 
+// Code manager Active
+void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
+	//std::cout << pThis << std::endl;
+	return oCodeManagerAwake(pThis);
+}
+
+void __fastcall hkCheckNumbers(uintptr_t pThis) {
+	return oDoCodeCorrect(pThis);
+}
 
 DWORD WINAPI HackThread(HMODULE hModule) {
 	//Create Console
@@ -120,17 +145,26 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		// Offsets
 		uintptr_t assemblyAddress = (uintptr_t)GetModuleHandleW(L"GameAssembly.dll");
 
-		uintptr_t SpectateOutline_SetOutlineActiveRVA = 0x3C17A0;
-		oSetOutlineActive = (tSetOutlineActive)(assemblyAddress + SpectateOutline_SetOutlineActiveRVA);
+		uintptr_t SetOutlineActive_offset = 0x3C17A0;
+		oSetOutlineActive = (tSetOutlineActive)(assemblyAddress + SetOutlineActive_offset);
 
 		uintptr_t FireWeapon_offset = 0x4F38B0;
 		oFireWeapon = (tFireWeapon)(assemblyAddress + FireWeapon_offset);
 
 		uintptr_t SetOutlineColor_offset = 0xE71830;
 		oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
-		
+
 		uintptr_t SetCurrentAmmo_offset = 0x2A9FE0;
 		oSetCurrentAmmo = (tSetCurrentAmmo)(assemblyAddress + SetCurrentAmmo_offset);
+
+		uintptr_t CodeManagerAwake_offset = 0x3B0470;
+		oCodeManagerAwake = (tCodeManagerAwake)(assemblyAddress + CodeManagerAwake_offset);
+
+		uintptr_t CheckNumbers_offset = 0x3B0740;
+		oCheckNumbers = (tCheckNumbers)(assemblyAddress + CheckNumbers_offset);
+
+		uintptr_t DoCodeCorrect_offset = 0x3B0AF0;
+		oDoCodeCorrect = (tDoCodeCorrect)(assemblyAddress + DoCodeCorrect_offset);
 
 		// Attach Detours
 		DetourTransactionBegin();
@@ -139,6 +173,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourAttach(&(PVOID&)oFireWeapon, hkFireWeapon);
 		DetourAttach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
+		DetourAttach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
+		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {
@@ -156,6 +192,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourDetach(&(PVOID&)oFireWeapon, hkFireWeapon);
 		DetourDetach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
+		DetourDetach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
+		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {

@@ -16,3 +16,15 @@ tFireWeapon oFireWeapon;
 // Set Current Ammo
 typedef void(__fastcall* tSetCurrentAmmo)(void*, INT32);
 tSetCurrentAmmo oSetCurrentAmmo;
+
+// CodeManagerAwake
+typedef void(__fastcall* tCodeManagerAwake)(uintptr_t);
+tCodeManagerAwake oCodeManagerAwake;
+
+// CheckNumbers
+typedef void(__fastcall* tCheckNumbers)(uintptr_t);
+tCheckNumbers oCheckNumbers;
+
+// DoCodeCorrect
+typedef void(__fastcall* tDoCodeCorrect)(uintptr_t);
+tDoCodeCorrect oDoCodeCorrect;
