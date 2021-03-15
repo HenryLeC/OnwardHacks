@@ -1,19 +1,39 @@
-// dllmain.cpp : Main Hooking Logic And Input Logic.
+﻿// dllmain.cpp : Main Hooking Logic And Input Logic.
 #include "pch.h"
 #include <Windows.h>
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <stdio.h>
+#include <vector>
 #include "Detours/detours.h"
 #include "Structs.h"
 #include "HookHeaders.h"
 #include "mem.h"
+#include <io.h>
+#include <fcntl.h>
+#include <unordered_map>
+#include "Security.h"
+
+// Random
+const std::string inputPre = ">>> ";
 
 // Hacks Settings
 bool espEnabled = false;
 bool multiShotEnabled = false;
-int shotsPerBurst = 1;
+int shotsPerBurst = 6;
 bool gunHacksEnabled = false;
+
+enum Hacks {ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF};
+std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
+	{ESP, false},
+	{NoRecoil, false},
+	{InfiniteAmmo, false},
+	{FastBurst, false},
+	{AutoCap, false},
+	{MaxHealth, false},
+	{MaxDamage, false},
+};
 
 // Original Params
 std::map<uintptr_t, float> defaultDamage = {};
@@ -22,7 +42,7 @@ std::map<uintptr_t, float> defaultRof = {};
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(void* pThis, bool active) {
 	//std::cout << pThis << std::endl;
-	if (espEnabled) {
+	if (enabledHacks[ESP]) {
 		return oSetOutlineActive(pThis, true);
 	}
 	else {
@@ -47,6 +67,10 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 	bool* noRcoil = (bool*)(weapon + 0xC3);
 	// Damage
 	float* damage = (float*)(weapon + 0xF8);
+	// Colision Parent
+	std::vector<float>* vector = (std::vector<float>*)(weapon + 0x80);
+	float x = (*vector)[0];
+	//std::cout << std::dec << x << std::endl;
 
 	// Set Gun Params
 	if (defaultDamage.find(weapon) == defaultDamage.end()) {
@@ -54,19 +78,39 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 		defaultRof[weapon] = *rof;
 	}
 
-	if (gunHacksEnabled) {
-		*infAmmo = true;
-		*rof = 0.00001;
+	// No Recoil
+	if (enabledHacks[NoRecoil]) {
 		*noRcoil = true;
-		*damage = 2000;
+	}
+	else {
+		*noRcoil = false;
+	}
+
+	// Infinite Ammo
+	if (enabledHacks[InfiniteAmmo]) {
+		*infAmmo = true;
 	}
 	else {
 		*infAmmo = false;
-		*rof = defaultRof[weapon];
-		*damage = defaultDamage[weapon];
-		*noRcoil = false;
 	}
-	if (multiShotEnabled) {
+
+	// Damage
+	if (enabledHacks[MaxDamage]) {
+		*damage = 2000;
+	}
+	else {
+		*damage = defaultDamage[weapon];
+	}
+	
+	// ROF
+	if (enabledHacks[MaxROF]) {
+		*rof = (float)0.00000001;
+	}
+	else {
+		*rof = defaultRof[weapon];
+	}
+
+	if (enabledHacks[FastBurst]) {
 		for (int i = shotsPerBurst - 1; i <= 5; i++) {
 			oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 		}
@@ -77,12 +121,21 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 // Code manager Active
 void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
 	//std::cout << pThis << std::endl;
-	return oCodeManagerAwake(pThis);
+	oCodeManagerAwake(pThis);
+	return oDoCodeCorrect(pThis);
 }
 
+// Bypass Check Numbers
 void __fastcall hkCheckNumbers(uintptr_t pThis) {
 	return oDoCodeCorrect(pThis);
 }
+
+// War Player Awake Logic
+void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
+	oWarPlayerAwake(pThis);
+	//std::cout << std::hex << pThis << std::dec << std::endl;
+}
+
 
 DWORD WINAPI HackThread(HMODULE hModule) {
 	//Create Console
@@ -91,32 +144,98 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	freopen_s(&f, "CONOUT$", "w", stdout);
 	freopen_s(&f, "CONIN$", "r", stdin);
 
-	std::cout << "HackThread is running" << std::endl;
-	std::cout << "Ready For Inputs" << std::endl;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	while (true)
+	std::string key;
+
+	std::cout << "Enter Product Key: ";
+	std::cin >> key;
+
+	bool running = verify(key);
+
+	if (!running) {
+		std::cout << "Invalid Key, Exiting Now ...\n";
+		system("pause");
+	}
+	else {
+		system("cls"); // Clear Console
+		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+		// Onward Hax Text
+		std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
+		std::cout << "Injecting..." << std::endl;
+
+		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Disinject Hacks\n[0] Help \n";
+		std::cout << inputPre;
+	}
+
+	while (running)
 	{
-		//Keypress listening
-		if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
-			espEnabled = !espEnabled;
-			std::cout << "ESP enabled: " << espEnabled << std::endl;
-		}
-		else if (GetAsyncKeyState(VK_NUMPAD2) & 1) {
-			multiShotEnabled = !multiShotEnabled;
-			std::cout << "Multi Shot enabled: " << multiShotEnabled << std::endl;
-			if (multiShotEnabled) {
-				std::cout << "Enter Amount of Bullets Per Burst: ";
-				std::cin >> shotsPerBurst;
-				std::cout << "Shots Per Burst: " << shotsPerBurst << std::endl;
-			}
-		}
-		else if (GetAsyncKeyState(VK_NUMPAD3) & 1) {
-			gunHacksEnabled = !gunHacksEnabled;
-			std::cout << "Gun Hacks enabled: " << gunHacksEnabled << std::endl;
-		}
-		else if (GetAsyncKeyState(VK_NUMPAD0) & 1) {
+		int input;
+		// Get Input
+		std::cin >> input;
+		switch (input) {
+		case 1:
+			enabledHacks[ESP] = !enabledHacks[ESP];
+			std::cout << "ESP enabled: " << enabledHacks[ESP] << std::endl;
+			break;
+		case 2:
+			enabledHacks[NoRecoil] = !enabledHacks[NoRecoil];
+			std::cout << "No Recoil enabled: " << enabledHacks[NoRecoil] << std::endl;
+			break;
+		case 3:
+			enabledHacks[InfiniteAmmo] = !enabledHacks[InfiniteAmmo];
+			std::cout << "Infinite Ammo enabled: " << enabledHacks[InfiniteAmmo] << std::endl;
+			break;
+		case 4:
+			enabledHacks[FastBurst] = !enabledHacks[FastBurst];
+			std::cout << "Fast Burst enabled: " << enabledHacks[FastBurst] << std::endl;
+			break;
+		case 5:
+			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
+			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
+			break;
+		case 6:
+			enabledHacks[MaxHealth] = !enabledHacks[MaxHealth];
+			std::cout << "Max Health enabled: " << enabledHacks[MaxHealth] << std::endl;
+			break;
+		case 7:
+			enabledHacks[MaxDamage] = !enabledHacks[MaxDamage];
+			std::cout << "Max Damage enabled: " << enabledHacks[MaxDamage] << std::endl;
+			break;
+		case 8:
+			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
+			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
+			break;
+		case 9:
+			running = false;
+			break;
+		case 0:
+			std::cout << "Type the number cooresponding to the option you would like and press enter" << std::endl;
 			break;
 		}
+		std::cout << inputPre;
+		////Keypress listening
+		//if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
+		//	espEnabled = !espEnabled;
+		//	std::cout << "ESP enabled: " << espEnabled << std::endl;
+		//}
+		//else if (GetAsyncKeyState(VK_NUMPAD2) & 1) {
+		//	multiShotEnabled = !multiShotEnabled;
+		//	std::cout << "Multi Shot enabled: " << multiShotEnabled << std::endl;
+		//	if (multiShotEnabled) {
+		//		std::cout << "Enter Amount of Bullets Per Burst: ";
+		//		std::cin >> shotsPerBurst;
+		//		std::cout << "Shots Per Burst: " << shotsPerBurst << std::endl;
+		//	}
+		//}
+		//else if (GetAsyncKeyState(VK_NUMPAD3) & 1) {
+		//	gunHacksEnabled = !gunHacksEnabled;
+		//	std::cout << "Gun Hacks enabled: " << gunHacksEnabled << std::endl;
+		//}
+		//else if (GetAsyncKeyState(VK_NUMPAD0) & 1) {
+		//	break;
+		//}
 	}
 
 	if (f) {
@@ -166,6 +285,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		uintptr_t DoCodeCorrect_offset = 0x3B0AF0;
 		oDoCodeCorrect = (tDoCodeCorrect)(assemblyAddress + DoCodeCorrect_offset);
 
+		uintptr_t WarPlayerAwake_offset = 0x3952B0;
+		oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
+
 		// Attach Detours
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
@@ -175,6 +297,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourAttach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
+		DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {
@@ -194,6 +317,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourDetach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
+		DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {

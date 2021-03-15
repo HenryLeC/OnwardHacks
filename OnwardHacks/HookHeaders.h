@@ -28,3 +28,7 @@ tCheckNumbers oCheckNumbers;
 // DoCodeCorrect
 typedef void(__fastcall* tDoCodeCorrect)(uintptr_t);
 tDoCodeCorrect oDoCodeCorrect;
+
+// WarPlayerAwake
+typedef void(__fastcall* tWarPlayerAwake)(uintptr_t);
+tWarPlayerAwake oWarPlayerAwake;

@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Colors.h" />
     <ClInclude Include="Detours\detours.h" />
     <ClInclude Include="Detours\detver.h" />
     <ClInclude Include="Detours\syelog.h" />
@@ -158,6 +159,7 @@
     <ClInclude Include="HookHeaders.h" />
     <ClInclude Include="mem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Security.h" />
     <ClInclude Include="Structs.h" />
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Security.cpp" />
     <ClCompile Include="Structs.cpp" />
   </ItemGroup>
   <ItemGroup>
