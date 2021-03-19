@@ -24,7 +24,7 @@
 ### Build All
 1. Select Build, Batch Build
 2. Select Below Config Options (You only need to do this once)
-![Config Option](BuildConfig.png)
+![Config Option](BuildConfig.PNG)
 3. Click Build
 4. Copy Injector.dll and OnwardHacks.dll from x64/Release and x64/Debug folders respectively
 5. Paste in x64/Release/netcoreapp3.1
