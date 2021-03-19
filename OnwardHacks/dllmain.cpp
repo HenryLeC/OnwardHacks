@@ -178,7 +178,7 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		std::cout << "Injecting..." << std::endl;
 
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Invincibility X\n[-1] Disinject Hacks\n[0] Help \n";
+		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[-1] Disinject Hacks\n[0] Help \n";
 		std::cout << inputPre;
 	}
 
@@ -222,8 +222,6 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
 			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
 			break;
-		case 9:
-
 		case -1:
 			running = false;
 			break;

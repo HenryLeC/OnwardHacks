@@ -9,20 +9,16 @@ namespace OnwardHacksInjector
 {
     public class AesCryptographyService
     {
-        static Random random = new Random();
+        static readonly Random random = new Random();
 
         public byte[] EncryptDll(byte[] data, byte[] key, byte[] iv)
         {
-            using (var aes = Aes.Create())
-            {
-                aes.Key = key;
-                aes.IV = iv;
+            using var aes = Aes.Create();
+            aes.Key = key;
+            aes.IV = iv;
 
-                using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
-                {
-                    return PerformCryptography(data, encryptor);
-                }
-            }
+            using var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            return PerformCryptography(data, encryptor);
         }
 
         public string DecryptDll(byte[] data, byte[] key, byte[] iv)
@@ -33,10 +29,8 @@ namespace OnwardHacksInjector
                 aes.Key = key;
                 aes.IV = iv;
 
-                using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
-                {
-                    File.WriteAllBytes(decryptedPath, PerformCryptography(data, decryptor));
-                }
+                using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                File.WriteAllBytes(decryptedPath, PerformCryptography(data, decryptor));
             }
             return decryptedPath;
         }
@@ -48,14 +42,12 @@ namespace OnwardHacksInjector
         }
         private byte[] PerformCryptography(byte[] data, ICryptoTransform cryptoTransform)
         {
-            using (var ms = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write))
-            {
-                cryptoStream.Write(data, 0, data.Length);
-                cryptoStream.FlushFinalBlock();
+            using var ms = new MemoryStream();
+            using var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
+            cryptoStream.Write(data, 0, data.Length);
+            cryptoStream.FlushFinalBlock();
 
-                return ms.ToArray();
-            }
+            return ms.ToArray();
         }
 
     }
