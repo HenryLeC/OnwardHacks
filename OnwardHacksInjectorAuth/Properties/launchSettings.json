@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OnwardHacksInjectorAuth": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

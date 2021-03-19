@@ -10,7 +10,7 @@ typedef void(__fastcall* tSetOutlineColor)(void*, Color);
 tSetOutlineColor oSetOutlineColor;
 
 // Fire Weapon
-typedef void(__fastcall* tFireWeapon)(uintptr_t, void*, void*, void*);
+typedef void(__fastcall* tFireWeapon)(uintptr_t, uintptr_t, uintptr_t, void*);
 tFireWeapon oFireWeapon;
 
 // Set Current Ammo
@@ -32,3 +32,7 @@ tDoCodeCorrect oDoCodeCorrect;
 // WarPlayerAwake
 typedef void(__fastcall* tWarPlayerAwake)(uintptr_t);
 tWarPlayerAwake oWarPlayerAwake;
+
+// Set Invicincibity
+typedef void(__fastcall* tSetManualInvincibility)(uintptr_t, bool);
+tSetManualInvincibility oSetManualInvincibility;

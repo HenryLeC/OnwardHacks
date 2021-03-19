@@ -17,6 +17,7 @@
 
 // Random
 const std::string inputPre = ">>> ";
+uintptr_t currentPlayer;
 
 // Hacks Settings
 bool espEnabled = false;
@@ -24,7 +25,9 @@ bool multiShotEnabled = false;
 int shotsPerBurst = 6;
 bool gunHacksEnabled = false;
 
-enum Hacks {ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF};
+enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF };
+enum HackSettings {NeedCode};
+
 std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
 	{ESP, false},
 	{NoRecoil, false},
@@ -33,6 +36,9 @@ std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
 	{AutoCap, false},
 	{MaxHealth, false},
 	{MaxDamage, false},
+};
+std::unordered_map<HackSettings, bool> hacksSettings = {
+	{NeedCode, false}
 };
 
 // Original Params
@@ -57,8 +63,8 @@ void __fastcall hkSetOutlineColor(void* pThis, Color color) {
 }
 
 // Fire Weapon
-void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward, void* aiSourceId) {
-	//std::cout << "Weapon Object: " << (weapon) << std::endl;
+void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t forward, void* aiSourceId) {
+	//std::cout << "Weapon Object: " << std::hex << (weapon) << std::endl;
 	// Infinite Ammo
 	bool* infAmmo = (bool*)(weapon + 0xAC);
 	// Rof
@@ -67,10 +73,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 	bool* noRcoil = (bool*)(weapon + 0xC3);
 	// Damage
 	float* damage = (float*)(weapon + 0xF8);
-	// Colision Parent
-	std::vector<float>* vector = (std::vector<float>*)(weapon + 0x80);
-	float x = (*vector)[0];
-	//std::cout << std::dec << x << std::endl;
+	// 
 
 	// Set Gun Params
 	if (defaultDamage.find(weapon) == defaultDamage.end()) {
@@ -101,7 +104,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 	else {
 		*damage = defaultDamage[weapon];
 	}
-	
+
 	// ROF
 	if (enabledHacks[MaxROF]) {
 		*rof = (float)0.00000001;
@@ -122,18 +125,28 @@ void __fastcall hkFireWeapon(uintptr_t weapon, void* PlayerSource, void* forward
 void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
 	//std::cout << pThis << std::endl;
 	oCodeManagerAwake(pThis);
-	return oDoCodeCorrect(pThis);
+	// Auto Cap if no need for code and hack enabled
+	if (enabledHacks[AutoCap] && !hacksSettings[NeedCode]) {
+		oDoCodeCorrect(pThis);
+	}
 }
 
-// Bypass Check Numbers
+// Check Code Numbers
 void __fastcall hkCheckNumbers(uintptr_t pThis) {
-	return oDoCodeCorrect(pThis);
+	if (enabledHacks[AutoCap] && hacksSettings[NeedCode]) {
+		return oDoCodeCorrect(pThis);
+	}
+	else {
+		return oCheckNumbers(pThis);
+	}
 }
 
 // War Player Awake Logic
 void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
+	currentPlayer = pThis + 0x10;
+	//oSetManualInvincibility(pThis, true);
 	oWarPlayerAwake(pThis);
-	//std::cout << std::hex << pThis << std::dec << std::endl;
+	//d::cout << "Player: " << std::hex << pThis << std::dec << std::endl;
 }
 
 
@@ -148,10 +161,10 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 
 	std::string key;
 
-	std::cout << "Enter Product Key: ";
-	std::cin >> key;
+	/*std::cout << "Enter Product Key: ";
+	std::cin >> key;*/
 
-	bool running = verify(key);
+	bool running = true; /*verify(key);*/
 
 	if (!running) {
 		std::cout << "Invalid Key, Exiting Now ...\n";
@@ -165,7 +178,7 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		std::cout << "Injecting..." << std::endl;
 
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Disinject Hacks\n[0] Help \n";
+		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Invincibility X\n[-1] Disinject Hacks\n[0] Help \n";
 		std::cout << inputPre;
 	}
 
@@ -193,6 +206,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			break;
 		case 5:
 			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
+			std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
+			std::cin >> hacksSettings[NeedCode];
 			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
 			break;
 		case 6:
@@ -208,6 +223,8 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
 			break;
 		case 9:
+
+		case -1:
 			running = false;
 			break;
 		case 0:
@@ -287,6 +304,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		uintptr_t WarPlayerAwake_offset = 0x3952B0;
 		oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
+
+		uintptr_t SetManualInvincibity_offset = 0x399020;
+		oSetManualInvincibility = (tSetManualInvincibility)(assemblyAddress + SetManualInvincibity_offset);
 
 		// Attach Detours
 		DetourTransactionBegin();
