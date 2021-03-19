@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <unordered_map>
 #include "Security.h"
+#include "Speedhack.h"
 
 // Random
 const std::string inputPre = ">>> ";
@@ -25,7 +26,7 @@ bool multiShotEnabled = false;
 int shotsPerBurst = 6;
 bool gunHacksEnabled = false;
 
-enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF };
+enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF, SpeedHack };
 enum HackSettings {NeedCode};
 
 std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
@@ -36,6 +37,7 @@ std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
 	{AutoCap, false},
 	{MaxHealth, false},
 	{MaxDamage, false},
+	{SpeedHack, false},
 };
 std::unordered_map<HackSettings, bool> hacksSettings = {
 	{NeedCode, false}
@@ -178,7 +180,7 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		std::cout << "Injecting..." << std::endl;
 
 		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[-1] Disinject Hacks\n[0] Help \n";
+		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Speeshack 2x\n[-1] Disinject Hacks\n[0] Help \n";
 		std::cout << inputPre;
 	}
 
@@ -206,8 +208,10 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			break;
 		case 5:
 			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
-			std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
-			std::cin >> hacksSettings[NeedCode];
+			if (enabledHacks[AutoCap]) {
+				std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
+				std::cin >> hacksSettings[NeedCode];
+			}
 			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
 			break;
 		case 6:
@@ -222,6 +226,9 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
 			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
 			break;
+		case 9:
+			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
+			std::cout << "Speed Hack ennabled: " << enabledHacks[SpeedHack] << std::endl;
 		case -1:
 			running = false;
 			break;
@@ -317,6 +324,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 		DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
+		// Speedhack
+		Speedhack::Setup();
+		Speedhack::SetSpeed(1.0);
+
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {
 			MessageBox(HWND_DESKTOP, L"Failed to detour", L"timb3r", MB_OK);
@@ -336,6 +347,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 		DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
+
+		// Speedhack
+		Speedhack::Detach();
+
 
 		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {

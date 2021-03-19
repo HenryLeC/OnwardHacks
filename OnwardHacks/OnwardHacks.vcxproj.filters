@@ -48,6 +48,9 @@
     <ClInclude Include="Security.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Speedhack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Security.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Speedhack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
