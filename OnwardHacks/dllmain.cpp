@@ -228,6 +228,12 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			break;
 		case 8:
 			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
+			if (enabledHacks[SpeedHack]) {
+				Speedhack::SetSpeed(2.0);
+			}
+			else {
+				Speedhack::SetSpeed(1.0);
+			}
 			std::cout << "Speed Hack enabled: " << enabledHacks[SpeedHack] << std::endl;
 			break;
 		case -1:
