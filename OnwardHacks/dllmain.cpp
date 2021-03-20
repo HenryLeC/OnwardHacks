@@ -148,7 +148,7 @@ void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
 	currentPlayer = pThis + 0x10;
 	//oSetManualInvincibility(pThis, true);
 	oWarPlayerAwake(pThis);
-	//d::cout << "Player: " << std::hex << pThis << std::dec << std::endl;
+	//std::cout << "Player: " << std::hex << pThis << std::dec << std::endl;
 }
 
 
@@ -166,23 +166,18 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	/*std::cout << "Enter Product Key: ";
 	std::cin >> key;*/
 
-	bool running = true; /*verify(key);*/
+	bool running = true;
+	
+	system("cls"); // Clear Console
+	SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+	// Onward Hax Text
+	std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
+	std::cout << "Injecting..." << std::endl;
 
-	if (!running) {
-		std::cout << "Invalid Key, Exiting Now ...\n";
-		system("pause");
-	}
-	else {
-		system("cls"); // Clear Console
-		SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-		// Onward Hax Text
-		std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
-		std::cout << "Injecting..." << std::endl;
-
-		SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-		std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Health X \n[7] Maxed Damage \n[8] Max Rate Of Fire\n[9] Speeshack 2x\n[-1] Disinject Hacks\n[0] Help \n";
-		std::cout << inputPre;
-	}
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] 6 Round Burst \n[5] Auto-Cap \n[6] Maxed Damage \n[7] Max Rate Of Fire\n[8] Speedhack 2x\n[-1] Disinject Hacks\n[0] Help \n";
+	std::cout << inputPre;
+	
 
 	while (running)
 	{
@@ -215,20 +210,16 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
 			break;
 		case 6:
-			enabledHacks[MaxHealth] = !enabledHacks[MaxHealth];
-			std::cout << "Max Health enabled: " << enabledHacks[MaxHealth] << std::endl;
-			break;
-		case 7:
 			enabledHacks[MaxDamage] = !enabledHacks[MaxDamage];
 			std::cout << "Max Damage enabled: " << enabledHacks[MaxDamage] << std::endl;
 			break;
-		case 8:
+		case 7:
 			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
 			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
 			break;
-		case 9:
+		case 8:
 			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
-			std::cout << "Speed Hack ennabled: " << enabledHacks[SpeedHack] << std::endl;
+			std::cout << "Speed Hack enabled: " << enabledHacks[SpeedHack] << std::endl;
 		case -1:
 			running = false;
 			break;
