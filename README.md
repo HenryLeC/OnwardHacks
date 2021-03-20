@@ -26,7 +26,7 @@
 2. Select Below Config Options (You only need to do this once)
 ![Config Option](BuildConfig.PNG)
 3. Click Build
-4. Copy Injector.dll and OnwardHacks.dll from x64/Release and x64/Debug folders respectively
+4. Copy Injector.dll and OnwardHacks.dll from x64/Release folder
 5. Paste in x64/Release/netcoreapp3.1
 5. Run OnwardHacksInjector.exe, log in to Dev account and select 2 to build OnwardHacksEncrypted.dll
 6. Close OnwardHacksInjector
@@ -36,7 +36,7 @@
 #### OnwardHacks
 1. Right click on OnwardHacks project
 2. Select "Set as Startup Project"
-3. On the top Select Debug and x64
+3. On the top Select Release and x64
 4. Click Build, Build, 2 OnwardHacks
 #### Injector
 1. Right click on Injector project
