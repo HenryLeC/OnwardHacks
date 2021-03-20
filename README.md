@@ -48,3 +48,7 @@
 2. Select "Set as Startup Project"
 3. On the top Select Release and x64
 4. Click Build, Build, 3 OnwardHacksInjector
+
+## TODO
+1. Encrypt Blatant and Silent with different Keys
+2. Have Blatant Check for level 1 and Silent Check for Level 2
