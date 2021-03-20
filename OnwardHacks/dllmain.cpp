@@ -21,10 +21,10 @@ const std::string inputPre = ">>> ";
 uintptr_t currentPlayer;
 
 // Hacks Settings
-bool espEnabled = false;
-bool multiShotEnabled = false;
 int shotsPerBurst = 6;
-bool gunHacksEnabled = false;
+// Gun
+float damageSetting = 2000;
+float rofSetting = 0.00000001;
 
 enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF, SpeedHack };
 enum HackSettings {NeedCode};
@@ -101,7 +101,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 
 	// Damage
 	if (enabledHacks[MaxDamage]) {
-		*damage = 2000;
+		*damage = damageSetting;
 	}
 	else {
 		*damage = defaultDamage[weapon];
@@ -109,7 +109,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 
 	// ROF
 	if (enabledHacks[MaxROF]) {
-		*rof = (float)0.00000001;
+		*rof = rofSetting;
 	}
 	else {
 		*rof = defaultRof[weapon];
@@ -145,7 +145,7 @@ void __fastcall hkCheckNumbers(uintptr_t pThis) {
 
 // War Player Awake Logic
 void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
-	currentPlayer = pThis + 0x10;
+	//currentPlayer = pThis + 0x10;
 	//oSetManualInvincibility(pThis, true);
 	oWarPlayerAwake(pThis);
 	//std::cout << "Player: " << std::hex << pThis << std::dec << std::endl;
