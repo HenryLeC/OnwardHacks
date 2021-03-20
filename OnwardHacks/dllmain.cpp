@@ -229,7 +229,10 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		case 8:
 			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
 			if (enabledHacks[SpeedHack]) {
-				Speedhack::SetSpeed(2.0);
+				std::cout << "Enter Speed Multiplier: ";
+				float SpeedMul;
+				std::cin >> SpeedMul;
+				Speedhack::SetSpeed(SpeedMul);
 			}
 			else {
 				Speedhack::SetSpeed(1.0);
