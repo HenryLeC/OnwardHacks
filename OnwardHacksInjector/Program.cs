@@ -104,6 +104,10 @@ namespace OnwardHacksInjector
                             Console.ReadLine();
                             InjectDll();
                         }
+                        else
+                        {
+                            Console.WriteLine("You Account Has An Invalid Rank, DM OnwardHax#6855 on Discord");
+                        }
                     }
                 }
             }
