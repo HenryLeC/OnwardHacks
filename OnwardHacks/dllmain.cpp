@@ -175,7 +175,12 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	std::cout << "Injecting..." << std::endl;
 
 	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+#if SILENT
 	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst \n[5] Auto-Cap \n[6] Maxed Damage \n[7] Max Rate Of Fire\n[8] Speedhack\n[-1] Disinject Hacks\n[0] Help \n";
+#endif
+#if BLATANT
+	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst (Disabled) \n[5] Any Code Capper \n[6] Maxed Damage (Disabled) \n[7] Max Rate Of Fire (Disabled) \n[8] Speedhack (Disabled) \n[-1] Disinject Hacks\n[0] Help \n";
+#endif
 	std::cout << inputPre;
 	
 
@@ -198,26 +203,42 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			std::cout << "Infinite Ammo enabled: " << enabledHacks[InfiniteAmmo] << std::endl;
 			break;
 		case 4:
+#if SILENT
 			enabledHacks[FastBurst] = !enabledHacks[FastBurst];
 			std::cout << "Rounds Per Burst: ";
 			std::cin >> shotsPerBurst;
 			std::cout << "Fast Burst enabled: " << enabledHacks[FastBurst] << std::endl;
+#endif
+#if BLATANT
+			std::cout << "Fast Burst is Disabled in this package" << std::endl;
+#endif
 			break;
 		case 5:
 			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
+#if SILENT
 			if (enabledHacks[AutoCap]) {
 				std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
 				std::cin >> hacksSettings[NeedCode];
 			}
+#endif
+#if BLATANT
+			hacksSettings[NeedCode] = true;
+#endif
 			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
 			break;
 		case 6:
+#if SILENT
 			enabledHacks[MaxDamage] = !enabledHacks[MaxDamage];
 			std::cout << "Enter Damage per round (2000) for instant death: ";
 			std::cin >> damageSetting;
 			std::cout << "Max Damage enabled: " << enabledHacks[MaxDamage] << std::endl;
+#endif
+#if BLATANT
+			std::cout << "Max Damage is Disabled in this package" << std::endl;
+#endif
 			break;
 		case 7:
+#if SILENT
 			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
 			std::cout << "Enter Rate of fire in rpm: ";
 			int rof;
@@ -225,8 +246,13 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 			rofSetting = 60 / rof;
 
 			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
+#endif
+#if BLATANT
+			std::cout << "Max Rate of Fire is Disabled in this package" << std::endl;
+#endif
 			break;
 		case 8:
+#if SILENT
 			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
 			if (enabledHacks[SpeedHack]) {
 				std::cout << "Enter Speed Multiplier: ";
@@ -238,6 +264,10 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 				Speedhack::SetSpeed(1.0);
 			}
 			std::cout << "Speed Hack enabled: " << enabledHacks[SpeedHack] << std::endl;
+#endif
+#if BLATANT
+			std::cout << "Speed Hack is Disabled in this package" << std::endl;
+#endif
 			break;
 		case -1:
 			running = false;

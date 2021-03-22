@@ -20,7 +20,7 @@ namespace OnwardHacksInjector
         {
 
             //This connects your file to the Auth.GG API, and sends back your application settings and such
-            OnProgramStart.Initialize("Onward Hacks", "319519", "wIt1fgnFfIsI0tX8S3ftTuvrBOdhdHK9LUa", "1.0");
+            OnProgramStart.Initialize("Onward Hacks", "319519", "OkHghfTTgqSvvzEnou0ZVqnrUnllOqIGB1K", "1.0");
             PrintLogo();
             Console.WriteLine("[1] Register");
             Console.WriteLine("[2] Login");
@@ -89,12 +89,16 @@ namespace OnwardHacksInjector
                                     break;
                                 case 2:
                                     AesCryptographyService aesManager = new AesCryptographyService();
-                                    byte[] encrypt = aesManager.EncryptDll(File.ReadAllBytes("OnwardHacks.dll"), Convert.FromBase64String(App.GrabVariable("ZSkckc5yc3TvjCyc6mHzCMNcwfWEc")), Convert.FromBase64String(App.GrabVariable("CKySlsmaLJsVVaXpprNkhqGcC7zcA")));
+                                    byte[] encrypt = aesManager.EncryptDll(File.ReadAllBytes("OnwardHacks.dll"), GetKey(), GetIV());
                                     File.WriteAllBytes("OnwardHacksEncrypted.dll", encrypt);
                                     break;
                             }
                         }
-                        else
+#if SILENT
+                        else if (User.Rank == "2")
+#elif BLATANT
+                        else if (User.Rank == "1")
+#endif
                         {
                             Console.WriteLine("Press Enter To Inject");
                             Console.ReadLine();
@@ -138,10 +142,30 @@ namespace OnwardHacksInjector
         private static void InjectDll()
         {
             //Aes aes = Aes.Create();
+            //Console.WriteLine(Convert.ToBase64String(aes.Key));
+            //Console.WriteLine(Convert.ToBase64String(aes.IV));
             //Inject Dll
             AesCryptographyService aesManager = new AesCryptographyService();
-            string dllPath = aesManager.DecryptDll(File.ReadAllBytes("OnwardHacksEncrypted.dll"), Convert.FromBase64String(App.GrabVariable("ZSkckc5yc3TvjCyc6mHzCMNcwfWEc")), Convert.FromBase64String(App.GrabVariable("CKySlsmaLJsVVaXpprNkhqGcC7zcA")));
+            string dllPath = aesManager.DecryptDll(File.ReadAllBytes("OnwardHacksEncrypted.dll"), GetKey(), GetIV());
             Inject("Onward.exe", dllPath);
+        }
+
+        private static byte[] GetKey()
+        {
+#if SILENT
+            return Convert.FromBase64String(App.GrabVariable("4CB5jhFCzs98IEmUIIQBPFXffwmR6") + App.GrabVariable("LhFC6B9YyS9Nxq3PcJvfwaJRba4z0") + App.GrabVariable("SjXfrVXazsV2n7zU5ito3QkIlZ3xF"));
+#elif BLATANT
+            return Convert.FromBase64String(App.GrabVariable("MsF0GctAsrJB4GiQSFoRA452NEcKU") + App.GrabVariable("CyG5tnYEeHIKVBJ6iacp8uqRdvnSU") + App.GrabVariable("oMiE9GLEcMo4cZa5XVvEncptJl0SU"));
+#endif
+        }
+
+        private static byte[] GetIV()
+        {
+#if SILENT
+            return Convert.FromBase64String(App.GrabVariable("I2IKewsKi4mPpz1CPSMrML51dmJRg") + App.GrabVariable("ijNSm6kzyrLLkgdBxD8nFhWOoUuoy"));
+#elif BLATANT
+            return Convert.FromBase64String(App.GrabVariable("DgK40d6YS4MM116h2kdfJoRyaQK5F") + App.GrabVariable("CSIV6mvhdTrzvcVBiEvAWl6sgOTvb"));
+#endif
         }
     }
 }
