@@ -1,16 +1,15 @@
-﻿# Onward Hacks
+# Onward Hacks
 
 ## Features
-1. ESP ✔
-2. No Recoil ✔
-3. Infinite Ammo ✔
-4. 6 Round Burst ✔
-5. Auto-Cap ✔
-6. Maxed Health ❌
-7. Maxed Damage ✔
-8. Max Rate Of Fire ✔
--1. Disinject Hacks ✔
-0. Help ✔
+* ESP ✔
+* No Recoil ✔
+* Infinite Ammo ✔
+* 6 Round Burst ✔
+* Auto-Cap ✔
+* Any Code Cap ✔
+* Maxed Damage ✔
+* Max Rate Of Fire ✔
+* Disinject Hacks ✔
 
 ## Instructions for use
 1. Run OnwardHacksInjector.exe while Onward is running
@@ -21,34 +20,13 @@
 6. Type the number cooresponding to the option you would like and press enter
 
 ## Build Instruction
-### Build All
-1. Select Build, Batch Build
-2. Select Below Config Options (You only need to do this once)
-![Config Option](BuildConfig.PNG)
-3. Click Build
-4. Copy Injector.dll and OnwardHacks.dll from x64/Release folder
-5. Paste in x64/Release/netcoreapp3.1
-5. Run OnwardHacksInjector.exe, log in to Dev account and select 2 to build OnwardHacksEncrypted.dll
-6. Close OnwardHacksInjector
-7. Open OnwardHacksInjector, log in, and inject. (If a dev account you will need to press 1 when prompted)
-8. Congratulate yourself for following these instructions
-### Build specific
-#### OnwardHacks
-1. Right click on OnwardHacks project
-2. Select "Set as Startup Project"
-3. On the top Select Release and x64
-4. Click Build, Build, 2 OnwardHacks
-#### Injector
-1. Right click on Injector project
-2. Select "Set as Startup Project"
-3. On the top Select Release and x64
-4. Click Build, Build, 1 Injector
-#### OnwardHacksInjector
-1. Right click on OnwardHacksInjector project
-2. Select "Set as Startup Project"
-3. On the top Select Release and x64
-4. Click Build, Build, 3 OnwardHacksInjector
-
-## TODO
-1. Encrypt Blatant and Silent with different Keys
-2. Have Blatant Check for level 1 and Silent Check for Level 2
+1. Select config for version you bould like
+2. Select x64 platform
+3. Select Build -> Build Solution
+4. Copy Injector.dll and OnwardHacks.dll from x64/{Configuration}
+5. Paste in x64/{Configuration}/netcoreapp3.1 folder
+6. Run OnwardHacksInjector.exe, log in to Dev account and select 2 to build OnwardHacksEncrypted.dll
+7. Close OnwardHacksInjector
+8. Delete OnwardHacks.dll
+9. Open OnwardHacksInjector, log in, and inject. (If a dev account you will need to press 1 when prompted)
+10. Congratulate yourself for following these instructions
