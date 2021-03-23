@@ -16,11 +16,18 @@ namespace OnwardHacksInjector
     {
         [DllImport("Injector.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern int Inject(string processName, string dllPath);
-        static void Main()
+        static void Main(string[] args)
         {
 
             //This connects your file to the Auth.GG API, and sends back your application settings and such
             OnProgramStart.Initialize("Onward Hacks", "319519", "OkHghfTTgqSvvzEnou0ZVqnrUnllOqIGB1K", "1.0");
+            if (args[0] == "BuildDll")
+            {
+                string[] creds = File.ReadAllLines(args[1]);
+                API.Login(creds[0], creds[1]);
+                EncryptDll(args[2], args[3]);
+                return;
+            }
             PrintLogo();
             Console.WriteLine("[1] Register");
             Console.WriteLine("[2] Login");
@@ -88,9 +95,7 @@ namespace OnwardHacksInjector
                                     InjectDll();
                                     break;
                                 case 2:
-                                    AesCryptographyService aesManager = new AesCryptographyService();
-                                    byte[] encrypt = aesManager.EncryptDll(File.ReadAllBytes("OnwardHacks.dll"), GetKey(), GetIV());
-                                    File.WriteAllBytes("OnwardHacksEncrypted.dll", encrypt);
+                                    EncryptDll("OnwardHacks.dll", "OnwardHacksEncrypted.dll");
                                     break;
                             }
                         }
@@ -170,6 +175,13 @@ namespace OnwardHacksInjector
 #elif BLATANT
             return Convert.FromBase64String(App.GrabVariable("DgK40d6YS4MM116h2kdfJoRyaQK5F") + App.GrabVariable("CSIV6mvhdTrzvcVBiEvAWl6sgOTvb"));
 #endif
+        }
+
+        private static void EncryptDll(string inFile, string outFile)
+        {
+            AesCryptographyService aesManager = new AesCryptographyService();
+            byte[] encrypt = aesManager.EncryptDll(File.ReadAllBytes(inFile), GetKey(), GetIV());
+            File.WriteAllBytes(outFile, encrypt);
         }
     }
 }

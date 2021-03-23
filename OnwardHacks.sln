@@ -8,10 +8,15 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OnwardHacks", "OnwardHacks\OnwardHacks.vcxproj", "{03FA7BE2-C958-493A-857E-E1AA537C8D05}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnwardHacksInjector", "OnwardHacksInjector\OnwardHacksInjector.csproj", "{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{45278E48-D23C-4DCB-8E03-016A710151B4} = {45278E48-D23C-4DCB-8E03-016A710151B4}
+		{03FA7BE2-C958-493A-857E-E1AA537C8D05} = {03FA7BE2-C958-493A-857E-E1AA537C8D05}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9B9AAB30-34A7-46BB-AA72-2FCB53BF4767}"
 	ProjectSection(SolutionItems) = preProject
 		BuildConfig.PNG = BuildConfig.PNG
+		BuildCreds.txt = BuildCreds.txt
 		README.md = README.md
 	EndProjectSection
 EndProject

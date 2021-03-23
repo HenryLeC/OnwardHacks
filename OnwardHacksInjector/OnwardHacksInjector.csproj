@@ -32,4 +32,8 @@
     <PackageReference Include="System.Security.Principal.Windows" Version="5.0.0" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(OutDir)..\Injector.dll $(OutDir)&#xD;&#xA;$(OutDir)$(TargetName).exe BuildDll $(SolutionDir)BuildCreds.txt $(OutDir)..\OnwardHacks.dll $(OutDir)OnwardHacksEncrypted.dll" />
+  </Target>
+
 </Project>

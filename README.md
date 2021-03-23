@@ -20,13 +20,12 @@
 6. Type the number cooresponding to the option you would like and press enter
 
 ## Build Instruction
-1. Select config for version you bould like
-2. Select x64 platform
-3. Select Build -> Build Solution
-4. Copy Injector.dll and OnwardHacks.dll from x64/{Configuration}
-5. Paste in x64/{Configuration}/netcoreapp3.1 folder
-6. Run OnwardHacksInjector.exe, log in to Dev account and select 2 to build OnwardHacksEncrypted.dll
-7. Close OnwardHacksInjector
-8. Delete OnwardHacks.dll
-9. Open OnwardHacksInjector, log in, and inject. (If a dev account you will need to press 1 when prompted)
-10. Congratulate yourself for following these instructions
+### One Time Setup
+1. Right Click on SolutionItems
+2. Select Add -> NewItem -> TextFile
+3. Enter BuildCreds.txt as name and click Add
+4. Write your Username on First Line and your Password on second
+### Every Time
+5. Select config for version you bould like
+6. Select x64 platform
+7. Select Build -> Build Solution
