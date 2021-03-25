@@ -364,11 +364,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 		//DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
+		LONG lError = DetourTransactionCommit();
+
 		// Speedhack
 		Speedhack::Setup();
 		Speedhack::SetSpeed(1.0);
 
-		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {
 			MessageBox(HWND_DESKTOP, L"Failed to detour", L"timb3r", MB_OK);
 			return FALSE;
@@ -388,11 +389,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
 		//DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
+		LONG lError = DetourTransactionCommit();
+
 		// Speedhack
 		Speedhack::Detach();
 
 
-		LONG lError = DetourTransactionCommit();
 		if (lError != NO_ERROR) {
 			MessageBox(HWND_DESKTOP, L"Failed to detour", L"timb3r", MB_OK);
 		}
