@@ -6,6 +6,7 @@
     <OutputPath>$(SolutionDir)\x64\$(Configuration)\</OutputPath>
     <Platforms>x64</Platforms>
     <Configurations>SilentRelease;SilentDebug;BlatantDebug;BlatantRelease</Configurations>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BlatantDebug|x64'">

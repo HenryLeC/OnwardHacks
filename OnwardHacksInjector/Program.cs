@@ -20,14 +20,23 @@ namespace OnwardHacksInjector
         {
 
             //This connects your file to the Auth.GG API, and sends back your application settings and such
-            OnProgramStart.Initialize("Onward Hacks", "319519", "OkHghfTTgqSvvzEnou0ZVqnrUnllOqIGB1K", "1.0");
-            if (args[0] == "BuildDll")
+            //OnProgramStart.Initialize("Onward Hacks", "319519", "OkHghfTTgqSvvzEnou0ZVqnrUnllOqIGB1K", "1.0");
+#if SILENT
+            OnProgramStart.Initialize("Onward Hacks Silent", "319519", "4tc6Bsnp7OceQgrL1wk9fG1Rm6fxRFKQbVf", "1.0");
+#elif BLATANT
+            OnProgramStart.Initialize("Onward Hacks Blatant", "319519", "JrahfUOxs2fa50wjCcyTd7cpt21ny0c40qp", "1.0");
+#endif
+            try
             {
-                string[] creds = File.ReadAllLines(args[1]);
-                API.Login(creds[0], creds[1]);
-                EncryptDll(args[2], args[3]);
-                return;
+                if (args[0] == "BuildDll")
+                {
+                    string[] creds = File.ReadAllLines(args[1]);
+                    API.Login(creds[0], creds[1]);
+                    EncryptDll(args[2], args[3]);
+                    return;
+                }
             }
+            catch { }
             PrintLogo();
             Console.WriteLine("[1] Register");
             Console.WriteLine("[2] Login");
@@ -99,19 +108,11 @@ namespace OnwardHacksInjector
                                     break;
                             }
                         }
-#if SILENT
-                        else if (User.Rank == "2")
-#elif BLATANT
-                        else if (User.Rank == "1")
-#endif
+                        else
                         {
                             Console.WriteLine("Press Enter To Inject");
                             Console.ReadLine();
                             InjectDll();
-                        }
-                        else
-                        {
-                            Console.WriteLine("You Account Has An Invalid Rank, DM OnwardHax#6855 on Discord");
                         }
                     }
                 }
@@ -162,18 +163,18 @@ namespace OnwardHacksInjector
         private static byte[] GetKey()
         {
 #if SILENT
-            return Convert.FromBase64String(App.GrabVariable("4CB5jhFCzs98IEmUIIQBPFXffwmR6") + App.GrabVariable("LhFC6B9YyS9Nxq3PcJvfwaJRba4z0") + App.GrabVariable("SjXfrVXazsV2n7zU5ito3QkIlZ3xF"));
+            return Convert.FromBase64String(App.GrabVariable("ZZoXZGAw69xWKIcq3AuIpPww68y6I") + App.GrabVariable("WckmKpe6nfOiB7jwyIFlGb9mV9VSF") + App.GrabVariable("BYShmWnXX3HOhAoK9buJYipGxjam3"));
 #elif BLATANT
-            return Convert.FromBase64String(App.GrabVariable("MsF0GctAsrJB4GiQSFoRA452NEcKU") + App.GrabVariable("CyG5tnYEeHIKVBJ6iacp8uqRdvnSU") + App.GrabVariable("oMiE9GLEcMo4cZa5XVvEncptJl0SU"));
+            return Convert.FromBase64String(App.GrabVariable("uPyrl6XRxpV5MsN8bFCwA5bgZ1wR8") + App.GrabVariable("tk4pL9qka9ZBOpdUEoW34FUeFsaP5") + App.GrabVariable("vHJmlVWsn13qrsqPiTsvbAerXg5vs"));
 #endif
         }
 
         private static byte[] GetIV()
         {
 #if SILENT
-            return Convert.FromBase64String(App.GrabVariable("I2IKewsKi4mPpz1CPSMrML51dmJRg") + App.GrabVariable("ijNSm6kzyrLLkgdBxD8nFhWOoUuoy"));
+            return Convert.FromBase64String(App.GrabVariable("evau0avsKuXdTJ4DI3hpF8BHBPF1w") + App.GrabVariable("brAVp3CzXofJUtXAHiT8JbaJ5H1ip"));
 #elif BLATANT
-            return Convert.FromBase64String(App.GrabVariable("DgK40d6YS4MM116h2kdfJoRyaQK5F") + App.GrabVariable("CSIV6mvhdTrzvcVBiEvAWl6sgOTvb"));
+            return Convert.FromBase64String(App.GrabVariable("ey3tMRRWyZVsivqxEuXdXHAzAgvrI") + App.GrabVariable("HMUACx5uO9XmMMFxM3UeVl403BDe5"));
 #endif
         }
 

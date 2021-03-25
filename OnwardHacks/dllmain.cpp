@@ -326,32 +326,32 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		// Offsets
 		uintptr_t assemblyAddress = (uintptr_t)GetModuleHandleW(L"GameAssembly.dll");
 
-		uintptr_t SetOutlineActive_offset = 0x3C17A0;
+		uintptr_t SetOutlineActive_offset = 0x380030;
 		oSetOutlineActive = (tSetOutlineActive)(assemblyAddress + SetOutlineActive_offset);
 
-		uintptr_t FireWeapon_offset = 0x4F38B0;
+		uintptr_t FireWeapon_offset = 0x420220;
 		oFireWeapon = (tFireWeapon)(assemblyAddress + FireWeapon_offset);
 
-		uintptr_t SetOutlineColor_offset = 0xE71830;
-		oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
+		//uintptr_t SetOutlineColor_offset = 0xE71830;
+		//oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
 
-		uintptr_t SetCurrentAmmo_offset = 0x2A9FE0;
-		oSetCurrentAmmo = (tSetCurrentAmmo)(assemblyAddress + SetCurrentAmmo_offset);
+		//uintptr_t SetCurrentAmmo_offset = 0x2A9FE0;
+		//oSetCurrentAmmo = (tSetCurrentAmmo)(assemblyAddress + SetCurrentAmmo_offset);
 
-		uintptr_t CodeManagerAwake_offset = 0x3B0470;
+		uintptr_t CodeManagerAwake_offset = 0x12BBE20;
 		oCodeManagerAwake = (tCodeManagerAwake)(assemblyAddress + CodeManagerAwake_offset);
 
-		uintptr_t CheckNumbers_offset = 0x3B0740;
+		uintptr_t CheckNumbers_offset = 0x12BC0F0;
 		oCheckNumbers = (tCheckNumbers)(assemblyAddress + CheckNumbers_offset);
 
-		uintptr_t DoCodeCorrect_offset = 0x3B0AF0;
+		uintptr_t DoCodeCorrect_offset = 0x12BC4A0;
 		oDoCodeCorrect = (tDoCodeCorrect)(assemblyAddress + DoCodeCorrect_offset);
 
-		uintptr_t WarPlayerAwake_offset = 0x3952B0;
-		oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
+		//uintptr_t WarPlayerAwake_offset = 0x3952B0;
+		//oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
 
-		uintptr_t SetManualInvincibity_offset = 0x399020;
-		oSetManualInvincibility = (tSetManualInvincibility)(assemblyAddress + SetManualInvincibity_offset);
+		//uintptr_t SetManualInvincibity_offset = 0x399020;
+		//oSetManualInvincibility = (tSetManualInvincibility)(assemblyAddress + SetManualInvincibity_offset);
 
 		// Attach Detours
 		DetourTransactionBegin();
@@ -359,10 +359,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		DetourAttach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourAttach(&(PVOID&)oFireWeapon, hkFireWeapon);
-		DetourAttach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
+		//DetourAttach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourAttach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
-		DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
+		//DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
 		// Speedhack
 		Speedhack::Setup();
@@ -383,10 +383,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		DetourDetach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourDetach(&(PVOID&)oFireWeapon, hkFireWeapon);
-		DetourDetach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
+		//DetourDetach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourDetach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
-		DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
+		//DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
 
 		// Speedhack
 		Speedhack::Detach();

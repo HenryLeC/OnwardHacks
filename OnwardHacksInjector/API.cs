@@ -143,107 +143,103 @@ namespace AuthGG
             Secret = secret;
             Version = version;
             Name = name;
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
+            using WebClient wc = new WebClient();
+            try
             {
-
-                try
+                wc.Proxy = null;
+                Security.Start();
+                string[] response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    wc.Proxy = null;
-                    Security.Start();
-                    response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(Secret),
-                        ["type"] = Encryption.APIService("start")
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(Secret),
+                    ["type"] = Encryption.APIService("start")
 
-                    }))).Split("|".ToCharArray()));
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
-                        
-                    }
-                    switch (response[2])
-                    {
-                        case "success":
-                            Constants.Initialized = true;
-                            if (response[3] == "Enabled")
-                                ApplicationSettings.Status = true;
-                            if (response[4] == "Enabled")
-                                ApplicationSettings.DeveloperMode = true;
-                            ApplicationSettings.Hash = response[5];
-                            ApplicationSettings.Version = response[6];
-                            ApplicationSettings.Update_Link = response[7];
-                            if (response[8] == "Enabled")
-                                ApplicationSettings.Freemode = true;
-                            if (response[9] == "Enabled")
-                                ApplicationSettings.Login = true;
-                            ApplicationSettings.Name = response[10];
-                            if (response[11] == "Enabled")
-                                ApplicationSettings.Register = true;
-                            if (ApplicationSettings.DeveloperMode)
+                }))).Split("|".ToCharArray()));
+                if (Security.MaliciousCheck(response[1]))
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+
+                }
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+
+                }
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
+
+                }
+                switch (response[2])
+                {
+                    case "success":
+                        Constants.Initialized = true;
+                        if (response[3] == "Enabled")
+                            ApplicationSettings.Status = true;
+                        if (response[4] == "Enabled")
+                            ApplicationSettings.DeveloperMode = true;
+                        ApplicationSettings.Hash = response[5];
+                        ApplicationSettings.Version = response[6];
+                        ApplicationSettings.Update_Link = response[7];
+                        if (response[8] == "Enabled")
+                            ApplicationSettings.Freemode = true;
+                        if (response[9] == "Enabled")
+                            ApplicationSettings.Login = true;
+                        ApplicationSettings.Name = response[10];
+                        if (response[11] == "Enabled")
+                            ApplicationSettings.Register = true;
+                        if (ApplicationSettings.DeveloperMode)
+                        {
+                            Console.WriteLine("Application is in Developer Mode, bypassing integrity and update check!");
+                            File.Create(Environment.CurrentDirectory + "/integrity.log").Close();
+                            string hash = Security.Integrity(Process.GetCurrentProcess().MainModule.FileName);
+                            File.WriteAllText(Environment.CurrentDirectory + "/integrity.log", hash);
+                            Console.WriteLine("Your applications hash has been saved to integrity.txt, please refer to this when your application is ready for release!");
+                        }
+                        else
+                        {
+                            if (ApplicationSettings.Version != Version)
                             {
-                                Console.WriteLine("Application is in Developer Mode, bypassing integrity and update check!");
-                                File.Create(Environment.CurrentDirectory + "/integrity.log").Close();
-                                string hash = Security.Integrity(Process.GetCurrentProcess().MainModule.FileName);
-                                File.WriteAllText(Environment.CurrentDirectory + "/integrity.log", hash);
-                                Console.WriteLine("Your applications hash has been saved to integrity.txt, please refer to this when your application is ready for release!");
+                                Console.WriteLine($"Update {ApplicationSettings.Version} available, redirecting to update!");
+                                Process.Start(ApplicationSettings.Update_Link);
+
                             }
-                            else
+                            if (response[12] == "Enabled")
                             {
-                                if (ApplicationSettings.Version != Version)
+                                if (ApplicationSettings.Hash != Security.Integrity(Process.GetCurrentProcess().MainModule.FileName))
                                 {
-                                    Console.WriteLine($"Update {ApplicationSettings.Version} available, redirecting to update!");
-                                    Process.Start(ApplicationSettings.Update_Link);
-                                    
-                                }
-                                if (response[12] == "Enabled")
-                                {
-                                    if (ApplicationSettings.Hash != Security.Integrity(Process.GetCurrentProcess().MainModule.FileName))
-                                    {
-                                        Console.WriteLine($"File has been tampered with, couldn't verify integrity!");
-                                        
-                                    }
+                                    Console.WriteLine($"File has been tampered with, couldn't verify integrity!");
+                                    Environment.Exit(-1);
                                 }
                             }
-                            if (ApplicationSettings.Status == false)
-                            {
-                                Console.WriteLine("Looks like this application is disabled, please try again later!");
-                                
-                            }
-                            break;
-                        case "binderror":
-                            Console.WriteLine(Encryption.Decode("RmFpbGVkIHRvIGJpbmQgdG8gc2VydmVyLCBjaGVjayB5b3VyIEFJRCAmIFNlY3JldCBpbiB5b3VyIGNvZGUh"));
-                            
-                            return;
-                        case "banned":
-                            Console.WriteLine("This application has been banned for violating the TOS" + Environment.NewLine + "Contact us at support@auth.gg");
-                            
-                            return;
-                    }
-                    Security.End();
+                        }
+                        if (ApplicationSettings.Status == false)
+                        {
+                            Console.WriteLine("Looks like this application is disabled, please try again later!");
+                            Environment.Exit(-1);
+                        }
+                        break;
+                    case "binderror":
+                        Console.WriteLine(Encryption.Decode("RmFpbGVkIHRvIGJpbmQgdG8gc2VydmVyLCBjaGVjayB5b3VyIEFJRCAmIFNlY3JldCBpbiB5b3VyIGNvZGUh"));
+                        Environment.Exit(-1);
+                        return;
+                    case "banned":
+                        Console.WriteLine("This application has been banned for violating the TOS" + Environment.NewLine + "Contact us at support@auth.gg");
+                        Environment.Exit(-1);
+                        return;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    
-                }
+                Security.End();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(-1);
             }
         }
     }
@@ -255,41 +251,39 @@ namespace AuthGG
             if (!Constants.Initialized)
             {
                 Console.WriteLine("Please initialize your application first!");
-                
+                Environment.Exit(-1);
             }
             if (string.IsNullOrWhiteSpace(action))
             {
                 Console.WriteLine("Missing log information!");
-                
+                Environment.Exit(-1);
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
+
+            using WebClient wc = new WebClient();
+            try
             {
-                try
+                Security.Start();
+                wc.Proxy = null;
+                string[] response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Security.Start();
-                    wc.Proxy = null;
-                    response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["username"] = Encryption.APIService(username),
-                        ["pcuser"] = Encryption.APIService(Environment.UserName),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["data"] = Encryption.APIService(action),
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("log")
-                    }))).Split("|".ToCharArray()));
-                    Security.End();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    
-                }
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["username"] = Encryption.APIService(username),
+                    ["pcuser"] = Encryption.APIService(Environment.UserName),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["data"] = Encryption.APIService(action),
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("log")
+                }))).Split("|".ToCharArray()));
+                Security.End();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(-1);
             }
         }
         public static bool AIO(string AIO)
@@ -322,103 +316,100 @@ namespace AuthGG
                 Console.WriteLine("Missing user login information!");
                 
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
-            {
-                try
-                {
-                    Security.Start();
-                    wc.Proxy = null;
-                    response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["username"] = Encryption.APIService(AIO),
-                        ["password"] = Encryption.APIService(AIO),
-                        ["hwid"] = Encryption.APIService(Constants.HWID()),
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("login")
 
-                    }))).Split("|".ToCharArray()));
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
-                        
-                    }
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    switch (response[2])
-                    {
-                        case "success":
-                            Security.End();
-                            User.ID = response[3];
-                            User.Username = response[4];
-                            User.Password = response[5];
-                            User.Email = response[6];
-                            User.HWID = response[7];
-                            User.UserVariable = response[8];
-                            User.Rank = response[9];
-                            User.IP = response[10];
-                            User.Expiry = response[11];
-                            User.LastLogin = response[12];
-                            User.RegisterDate = response[13];
-                            string Variables = response[14];
-                            foreach (string var in Variables.Split('~'))
-                            {
-                                string[] items = var.Split('^');
-                                try
-                                {
-                                    App.Variables.Add(items[0], items[1]);
-                                }
-                                catch
-                                {
-                                    //If some are null or not loaded, just ignore.
-                                    //Error will be shown when loading the variable anyways
-                                }
-                            }
-                            return true;
-                        case "invalid_details":
-                            Security.End();
-                            return false;
-                        case "time_expired":
-                            Console.WriteLine("Your subscription has expired!");
-                            Security.End();
-                            
-                            return false;
-                        case "hwid_updated":
-                            Console.WriteLine("New machine has been binded, re-open the application!");
-                            Security.End();
-                            
-                            return false;
-                        case "invalid_hwid":
-                            Console.WriteLine("This user is binded to another computer, please contact support!");
-                            Security.End();
-                            
-                            return false;
-                    }
-                }
-                catch (Exception ex)
+            using WebClient wc = new WebClient();
+            try
+            {
+                Security.Start();
+                wc.Proxy = null;
+                string[] response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Console.WriteLine(ex.Message);
-                    Security.End();
-                    
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["username"] = Encryption.APIService(AIO),
+                    ["password"] = Encryption.APIService(AIO),
+                    ["hwid"] = Encryption.APIService(Constants.HWID()),
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("login")
+
+                }))).Split("|".ToCharArray()));
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
+
                 }
-                return false;
+                if (Security.MaliciousCheck(response[1]))
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+
+                }
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+
+                }
+                switch (response[2])
+                {
+                    case "success":
+                        Security.End();
+                        User.ID = response[3];
+                        User.Username = response[4];
+                        User.Password = response[5];
+                        User.Email = response[6];
+                        User.HWID = response[7];
+                        User.UserVariable = response[8];
+                        User.Rank = response[9];
+                        User.IP = response[10];
+                        User.Expiry = response[11];
+                        User.LastLogin = response[12];
+                        User.RegisterDate = response[13];
+                        string Variables = response[14];
+                        foreach (string var in Variables.Split('~'))
+                        {
+                            string[] items = var.Split('^');
+                            try
+                            {
+                                App.Variables.Add(items[0], items[1]);
+                            }
+                            catch
+                            {
+                                //If some are null or not loaded, just ignore.
+                                //Error will be shown when loading the variable anyways
+                            }
+                        }
+                        return true;
+                    case "invalid_details":
+                        Security.End();
+                        return false;
+                    case "time_expired":
+                        Console.WriteLine("Your subscription has expired!");
+                        Security.End();
+
+                        return false;
+                    case "hwid_updated":
+                        Console.WriteLine("New machine has been binded, re-open the application!");
+                        Security.End();
+
+                        return false;
+                    case "invalid_hwid":
+                        Console.WriteLine("This user is binded to another computer, please contact support!");
+                        Security.End();
+
+                        return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Security.End();
 
             }
+            return false;
         }
         public static bool AIORegister(string AIO)
         {
@@ -433,177 +424,172 @@ namespace AuthGG
                 Console.WriteLine("Invalid registrar information!");
                 
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
+
+            using WebClient wc = new WebClient();
+            try
             {
-                try
+                Security.Start();
+                wc.Proxy = null;
+
+                string[] response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Security.Start();
-                    wc.Proxy = null;
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("register"),
+                    ["username"] = Encryption.APIService(AIO),
+                    ["password"] = Encryption.APIService(AIO),
+                    ["email"] = Encryption.APIService(AIO),
+                    ["license"] = Encryption.APIService(AIO),
+                    ["hwid"] = Encryption.APIService(Constants.HWID()),
 
-                    response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("register"),
-                        ["username"] = Encryption.APIService(AIO),
-                        ["password"] = Encryption.APIService(AIO),
-                        ["email"] = Encryption.APIService(AIO),
-                        ["license"] = Encryption.APIService(AIO),
-                        ["hwid"] = Encryption.APIService(Constants.HWID()),
-
-                    }))).Split("|".ToCharArray());
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
-                        Security.End();
-                        
-                    }
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
+                }))).Split("|".ToCharArray());
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
                     Security.End();
-                    switch (response[2])
-                    {
-                        case "success":
-                            return true;
-                        case "error":
-                            return false;
 
-                    }
                 }
-                catch (Exception ex)
+                if (Security.MaliciousCheck(response[1]))
                 {
-                    Console.WriteLine(ex.Message);
-                    
+                    Console.WriteLine("Possible malicious activity detected!");
+
                 }
-                return false;
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+
+                }
+                Security.End();
+                switch (response[2])
+                {
+                    case "success":
+                        return true;
+                    case "error":
+                        return false;
+
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
+            return false;
         }
         public static bool Login(string username, string password)
         {
             if (!Constants.Initialized)
             {
                 Console.WriteLine("Please initialize your application first!");
-                
+                Environment.Exit(-1);
             }
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 Console.WriteLine("Missing user login information!");
-                
+                Environment.Exit(-1);
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
+
+            using WebClient wc = new WebClient();
+            try
             {
-                try
+                Security.Start();
+                wc.Proxy = null;
+                string[] response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Security.Start();
-                    wc.Proxy = null;
-                    response = (Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["username"] = Encryption.APIService(username),
-                        ["password"] = Encryption.APIService(password),
-                        ["hwid"] = Encryption.APIService(Constants.HWID()),
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("login")
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["username"] = Encryption.APIService(username),
+                    ["password"] = Encryption.APIService(password),
+                    ["hwid"] = Encryption.APIService(Constants.HWID()),
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("login")
 
-                    }))).Split("|".ToCharArray()));
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
-                        
-                    }
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    switch (response[2])
-                    {
-                        case "success":
-                            User.ID = response[3];
-                            User.Username = response[4];
-                            User.Password = response[5];
-                            User.Email = response[6];
-                            User.HWID = response[7];
-                            User.UserVariable = response[8];
-                            User.Rank = response[9];
-                            User.IP = response[10];
-                            User.Expiry = response[11];
-                            User.LastLogin = response[12];
-                            User.RegisterDate = response[13];
-                            string Variables = response[14];
-                            foreach (string var in Variables.Split('~'))
+                }))).Split("|".ToCharArray()));
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
+                    Environment.Exit(-1);
+                }
+                if (Security.MaliciousCheck(response[1]))
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                switch (response[2])
+                {
+                    case "success":
+                        User.ID = response[3];
+                        User.Username = response[4];
+                        User.Password = response[5];
+                        User.Email = response[6];
+                        User.HWID = response[7];
+                        User.UserVariable = response[8];
+                        User.Rank = response[9];
+                        User.IP = response[10];
+                        User.Expiry = response[11];
+                        User.LastLogin = response[12];
+                        User.RegisterDate = response[13];
+                        string Variables = response[14];
+                        foreach (string var in Variables.Split('~'))
+                        {
+                            string[] items = var.Split('^');
+                            try
                             {
-                                string[] items = var.Split('^');
-                                try
-                                {
-                                    App.Variables.Add(items[0], items[1]);
-                                }
-                                catch
-                                {
-                                    //If some are null or not loaded, just ignore.
-                                    //Error will be shown when loading the variable anyways
-                                }
+                                App.Variables.Add(items[0], items[1]);
                             }
-                            Security.End();
-                            return true;
-                        case "invalid_details":
-                            Console.WriteLine("Sorry, your username/password does not match!");
-                            Security.End();
-                            
-                            return false;
-                        case "time_expired":
-                            Console.WriteLine("Your subscription has expired!");
-                            Security.End();
-                            
-                            return false;
-                        case "hwid_updated":
-                            Console.WriteLine("New machine has been binded, re-open the application!");
-                            Security.End();
-                            
-                            return false;
-                        case "invalid_hwid":
-                            Console.WriteLine("This user is binded to another computer, please contact support!");
-                            Security.End();
-                            
-                            return false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Security.End();
-                    
-                }
-                return false;
+                            catch
+                            {
+                                //If some are null or not loaded, just ignore.
+                                //Error will be shown when loading the variable anyways
+                            }
+                        }
+                        Security.End();
+                        return true;
+                    case "invalid_details":
+                        Console.WriteLine("Sorry, your username/password does not match!");
+                        Security.End();
+                        Environment.Exit(-1);
+                        return false;
+                    case "time_expired":
+                        Console.WriteLine("Your subscription has expired!");
+                        Security.End();
 
+                        return false;
+                    case "hwid_updated":
+                        Console.WriteLine("New machine has been binded, re-open the application!");
+                        Security.End();
+
+                        return false;
+                    case "invalid_hwid":
+                        Console.WriteLine("This user is binded to another computer, please contact support!");
+                        Security.End();
+
+                        return false;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Security.End();
+                Environment.Exit(-1);
+            }
+            return false;
         }
         public static bool Register(string username, string password, string email, string license)
         {
@@ -611,84 +597,82 @@ namespace AuthGG
             {
                 Console.WriteLine("Please initialize your application first!");
                 Security.End();
-                
+                Environment.Exit(-1);
             }
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(license))
             {
                 Console.WriteLine("Invalid registrar information!");
-                
+                Environment.Exit(-1);
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
+
+            using WebClient wc = new WebClient();
+            try
             {
-                try
+                Security.Start();
+                wc.Proxy = null;
+
+                string[] response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Security.Start();
-                    wc.Proxy = null;
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("register"),
+                    ["username"] = Encryption.APIService(username),
+                    ["password"] = Encryption.APIService(password),
+                    ["email"] = Encryption.APIService(email),
+                    ["license"] = Encryption.APIService(license),
+                    ["hwid"] = Encryption.APIService(Constants.HWID()),
 
-                    response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("register"),
-                        ["username"] = Encryption.APIService(username),
-                        ["password"] = Encryption.APIService(password),
-                        ["email"] = Encryption.APIService(email),
-                        ["license"] = Encryption.APIService(license),
-                        ["hwid"] = Encryption.APIService(Constants.HWID()),
-
-                    }))).Split("|".ToCharArray());
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
+                }))).Split("|".ToCharArray());
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
+                    Security.End();
+                    Environment.Exit(-1);
+                }
+                if (Security.MaliciousCheck(response[1]))
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                switch (response[2])
+                {
+                    case "success":
                         Security.End();
-                        
-                    }
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    switch (response[2])
-                    {
-                        case "success":
-                            Security.End();
-                            return true;
-                        case "invalid_license":
-                            Console.WriteLine("License does not exist!");
-                            Security.End();
-                            
-                            return false;
-                        case "email_used":
-                            Console.WriteLine("Email has already been used!");
-                            Security.End();
-                            
-                            return false;
-                        case "invalid_username":
-                            Console.WriteLine("You entered an invalid/used username!");
-                            Security.End();
-                            
-                            return false;
-                    }
+                        return true;
+                    case "invalid_license":
+                        Console.WriteLine("License does not exist!");
+                        Security.End();
+
+                        return false;
+                    case "email_used":
+                        Console.WriteLine("Email has already been used!");
+                        Security.End();
+
+                        return false;
+                    case "invalid_username":
+                        Console.WriteLine("You entered an invalid/used username!");
+                        Security.End();
+
+                        return false;
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    
-                }
-                return false;
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
+            return false;
         }
         public static bool ExtendSubscription(string username, string password, string license)
         {
@@ -696,88 +680,85 @@ namespace AuthGG
             {
                 Console.WriteLine("Please initialize your application first!");
                 Security.End();
-                
+                Environment.Exit(-1);
             }
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(license))
             {
                 Console.WriteLine("Invalid registrar information!");
                 
             }
-            string[] response = new string[] { };
-            using (WebClient wc = new WebClient())
-            {
-                try
-                {
-                    Security.Start();
-                    wc.Proxy = null;
-                    response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
-                    {
-                        ["token"] = Encryption.EncryptService(Constants.Token),
-                        ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
-                        ["aid"] = Encryption.APIService(OnProgramStart.AID),
-                        ["session_id"] = Constants.IV,
-                        ["api_id"] = Constants.APIENCRYPTSALT,
-                        ["api_key"] = Constants.APIENCRYPTKEY,
-                        ["session_key"] = Constants.Key,
-                        ["secret"] = Encryption.APIService(OnProgramStart.Secret),
-                        ["type"] = Encryption.APIService("extend"),
-                        ["username"] = Encryption.APIService(username),
-                        ["password"] = Encryption.APIService(password),
-                        ["license"] = Encryption.APIService(license),
 
-                    }))).Split("|".ToCharArray());
-                    if (response[0] != Constants.Token)
-                    {
-                        Console.WriteLine("Security error has been triggered!");
-                        Security.End();
-                        
-                    }
-                    if (Security.MaliciousCheck(response[1]))
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    if (Constants.Breached)
-                    {
-                        Console.WriteLine("Possible malicious activity detected!");
-                        
-                    }
-                    switch (response[2])
-                    {
-                        case "success":
-                            Security.End();
-                            return true;
-                        case "invalid_token":
-                            Console.WriteLine("Token does not exist!");
-                            Security.End();
-                            
-                            return false;
-                        case "invalid_details":
-                            Console.WriteLine("Your user details are invalid!");
-                            Security.End();
-                            
-                            return false;
-                    }
-                }
-                catch (Exception ex)
+            using WebClient wc = new WebClient();
+            try
+            {
+                Security.Start();
+                wc.Proxy = null;
+                string[] response = new string[] { };
+                response = Encryption.DecryptService(Encoding.Default.GetString(wc.UploadValues(Constants.ApiUrl, new NameValueCollection
                 {
-                    Console.WriteLine(ex.Message);
-                    
+                    ["token"] = Encryption.EncryptService(Constants.Token),
+                    ["timestamp"] = Encryption.EncryptService(DateTime.Now.ToString()),
+                    ["aid"] = Encryption.APIService(OnProgramStart.AID),
+                    ["session_id"] = Constants.IV,
+                    ["api_id"] = Constants.APIENCRYPTSALT,
+                    ["api_key"] = Constants.APIENCRYPTKEY,
+                    ["session_key"] = Constants.Key,
+                    ["secret"] = Encryption.APIService(OnProgramStart.Secret),
+                    ["type"] = Encryption.APIService("extend"),
+                    ["username"] = Encryption.APIService(username),
+                    ["password"] = Encryption.APIService(password),
+                    ["license"] = Encryption.APIService(license),
+
+                }))).Split("|".ToCharArray());
+                if (response[0] != Constants.Token)
+                {
+                    Console.WriteLine("Security error has been triggered!");
+                    Security.End();
+                    Environment.Exit(-1);
                 }
-                return false;
+                if (Security.MaliciousCheck(response[1]))
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                if (Constants.Breached)
+                {
+                    Console.WriteLine("Possible malicious activity detected!");
+                    Environment.Exit(-1);
+                }
+                switch (response[2])
+                {
+                    case "success":
+                        Security.End();
+                        return true;
+                    case "invalid_token":
+                        Console.WriteLine("Token does not exist!");
+                        Security.End();
+
+                        return false;
+                    case "invalid_details":
+                        Console.WriteLine("Your user details are invalid!");
+                        Security.End();
+
+                        return false;
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+            }
+            return false;
         }
     }
     internal class Security
     {
         public static string Signature(string value)
         {
-            using (MD5 md5 = MD5.Create())
-            {
-                byte[] input = Encoding.UTF8.GetBytes(value);
-                byte[] hash = md5.ComputeHash(input);
-                return BitConverter.ToString(hash).Replace("-", "");
-            }
+            using MD5 md5 = MD5.Create();
+            byte[] input = Encoding.UTF8.GetBytes(value);
+            byte[] hash = md5.ComputeHash(input);
+            return BitConverter.ToString(hash).Replace("-", "");
         }
         private static string Session(int length)
         {
@@ -799,7 +780,7 @@ namespace AuthGG
             if (Constants.Started)
             {
                 Console.WriteLine("A session has already been started, please end the previous one!");
-                
+                Environment.Exit(-1);
             }
             else
             {
@@ -810,7 +791,7 @@ namespace AuthGG
                     {
                         Constants.Breached = true;
                         Console.WriteLine("DNS redirecting has been detected!");
-                        
+                        Environment.Exit(-1);
                     }
                 }
                 InfoManager infoManager = new InfoManager();
@@ -829,7 +810,7 @@ namespace AuthGG
             if (!Constants.Started)
             {
                 Console.WriteLine("No session has been started, closing for security reasons!");
-                
+                Environment.Exit(-1);
             }
             else
             {
@@ -852,11 +833,9 @@ namespace AuthGG
             string result;
             using (MD5 md = MD5.Create())
             {
-                using (FileStream fileStream = File.OpenRead(filename))
-                {
-                    byte[] value = md.ComputeHash(fileStream);
-                    result = BitConverter.ToString(value).Replace("-", "").ToLowerInvariant();
-                }
+                using FileStream fileStream = File.OpenRead(filename);
+                byte[] value = md.ComputeHash(fileStream);
+                result = BitConverter.ToString(value).Replace("-", "").ToLowerInvariant();
             }
             return result;
         }
@@ -1016,19 +995,17 @@ namespace AuthGG
         private string GetArpTable()
         {
             string drive = Path.GetPathRoot(Environment.SystemDirectory);
-            ProcessStartInfo start = new ProcessStartInfo();
-            start.FileName = $@"{drive}Windows\System32\arp.exe";
-            start.Arguments = "-a";
-            start.UseShellExecute = false;
-            start.RedirectStandardOutput = true;
-
-            using (Process process = Process.Start(start))
+            ProcessStartInfo start = new ProcessStartInfo
             {
-                using (StreamReader reader = process.StandardOutput)
-                {
-                    return reader.ReadToEnd();
-                }
-            }
+                FileName = $@"{drive}Windows\System32\arp.exe",
+                Arguments = "-a",
+                UseShellExecute = false,
+                RedirectStandardOutput = true
+            };
+
+            using Process process = Process.Start(start);
+            using StreamReader reader = process.StandardOutput;
+            return reader.ReadToEnd();
         }
 
         private string GetGatewayMAC()
