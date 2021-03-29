@@ -10,6 +10,7 @@
 * Maxed Damage ✔
 * Max Rate Of Fire ✔
 * Disinject Hacks ✔
+* Infinite Points ✔
 
 ## Instructions for use
 1. Run OnwardHacksInjector.exe while Onward is running

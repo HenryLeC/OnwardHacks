@@ -1,24 +1,17 @@
 ﻿// dllmain.cpp : Main Hooking Logic And Input Logic.
 #include "pch.h"
 #include <Windows.h>
-#include <cstdio>
 #include <iostream>
 #include <map>
-#include <stdio.h>
-#include <vector>
-#include "Detours/detours.h"
-#include "Structs.h"
-#include "HookHeaders.h"
-#include "mem.h"
-#include <io.h>
-#include <fcntl.h>
 #include <unordered_map>
-#include "Security.h"
+#include "Detours/detours.h"
+#include "HookHeaders.h"
 #include "Speedhack.h"
 
 // Random
 const std::string inputPre = ">>> ";
 uintptr_t currentPlayer;
+uintptr_t colorScheme;
 
 // Hacks Settings
 int shotsPerBurst = 6;
@@ -48,20 +41,21 @@ std::map<uintptr_t, float> defaultDamage = {};
 std::map<uintptr_t, float> defaultRof = {};
 
 // SetOutlineActive
-void __fastcall hkSetOutlineActive(void* pThis, bool active) {
-	//std::cout << pThis << std::endl;
+void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
 	if (enabledHacks[ESP]) {
+		uintptr_t player = *(uintptr_t*)(pThis + 0x18);
+		int faction = oGetPlayerFaction(player);
+		if (faction == 1) {
+			oSetOutlineColor(pThis, colorScheme + 0x58);
+		}
+		else if(faction == 2) {
+			oSetOutlineColor(pThis, colorScheme + 0x48);
+		}
 		return oSetOutlineActive(pThis, true);
 	}
 	else {
 		return oSetOutlineActive(pThis, active);
 	}
-}
-
-// SetOutlineColor
-void __fastcall hkSetOutlineColor(void* pThis, Color color) {
-	std::cout << color.r << " " << color.g << " " << color.b << " " << color.a << " " << std::endl;
-	oSetOutlineColor(pThis, color);
 }
 
 // Fire Weapon
@@ -143,14 +137,17 @@ void __fastcall hkCheckNumbers(uintptr_t pThis) {
 	}
 }
 
-// War Player Awake Logic
-void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
-	//currentPlayer = pThis + 0x10;
-	//oSetManualInvincibility(pThis, true);
-	oWarPlayerAwake(pThis);
-	//std::cout << "Player: " << std::hex << pThis << std::dec << std::endl;
+// Get Faction Colors
+uintptr_t __fastcall hkGetFactionColors(uintptr_t pThis, uintptr_t Faction) {
+	colorScheme = pThis;
+	return oGetFactionColors(pThis, Faction);
 }
 
+// Recalcuate Points
+bool __fastcall hkRecalculatePoints(uintptr_t pThis) {
+	oRecalculatePoints(pThis);
+	return true;
+}
 
 DWORD WINAPI HackThread(HMODULE hModule) {
 	//Create Console
@@ -326,32 +323,23 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		// Offsets
 		uintptr_t assemblyAddress = (uintptr_t)GetModuleHandleW(L"GameAssembly.dll");
 
-		uintptr_t SetOutlineActive_offset = 0x380030;
 		oSetOutlineActive = (tSetOutlineActive)(assemblyAddress + SetOutlineActive_offset);
 
-		uintptr_t FireWeapon_offset = 0x420220;
 		oFireWeapon = (tFireWeapon)(assemblyAddress + FireWeapon_offset);
 
-		//uintptr_t SetOutlineColor_offset = 0xE71830;
-		//oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
+		oSetOutlineColor = (tSetOutlineColor)(assemblyAddress + SetOutlineColor_offset);
 
-		//uintptr_t SetCurrentAmmo_offset = 0x2A9FE0;
-		//oSetCurrentAmmo = (tSetCurrentAmmo)(assemblyAddress + SetCurrentAmmo_offset);
-
-		uintptr_t CodeManagerAwake_offset = 0x12BBE20;
 		oCodeManagerAwake = (tCodeManagerAwake)(assemblyAddress + CodeManagerAwake_offset);
 
-		uintptr_t CheckNumbers_offset = 0x12BC0F0;
 		oCheckNumbers = (tCheckNumbers)(assemblyAddress + CheckNumbers_offset);
 
-		uintptr_t DoCodeCorrect_offset = 0x12BC4A0;
 		oDoCodeCorrect = (tDoCodeCorrect)(assemblyAddress + DoCodeCorrect_offset);
 
-		//uintptr_t WarPlayerAwake_offset = 0x3952B0;
-		//oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
+		oGetFactionColors = (tGetFactionColors)(assemblyAddress + GetFactionColors_offset);
 
-		//uintptr_t SetManualInvincibity_offset = 0x399020;
-		//oSetManualInvincibility = (tSetManualInvincibility)(assemblyAddress + SetManualInvincibity_offset);
+		oGetPlayerFaction = (tGetPlayerFaction)(assemblyAddress + GetPlayerFaction_offset);
+
+		oRecalculatePoints = (tRecalculatePoints)(assemblyAddress + RecalculatePoints_offset);
 
 		// Attach Detours
 		DetourTransactionBegin();
@@ -359,10 +347,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		DetourAttach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourAttach(&(PVOID&)oFireWeapon, hkFireWeapon);
-		//DetourAttach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourAttach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourAttach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
-		//DetourAttach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
+		DetourAttach(&(PVOID&)oGetFactionColors, hkGetFactionColors);
+		DetourAttach(&(PVOID&)oRecalculatePoints, hkRecalculatePoints);
 
 		LONG lError = DetourTransactionCommit();
 
@@ -384,10 +372,10 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		DetourDetach(&(PVOID&)oSetOutlineActive, hkSetOutlineActive);
 		DetourDetach(&(PVOID&)oFireWeapon, hkFireWeapon);
-		//DetourDetach(&(PVOID&)oSetOutlineColor, hkSetOutlineColor);
 		DetourDetach(&(PVOID&)oCodeManagerAwake, hkCodeManagerAwake);
 		DetourDetach(&(PVOID&)oCheckNumbers, hkCheckNumbers);
-		//DetourDetach(&(PVOID&)oWarPlayerAwake, hkWarPlayerAwake);
+		DetourDetach(&(PVOID&)oGetFactionColors, hkGetFactionColors);
+		DetourDetach(&(PVOID&)oRecalculatePoints, hkRecalculatePoints);
 
 		LONG lError = DetourTransactionCommit();
 
