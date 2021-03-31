@@ -30,3 +30,8 @@
 5. Select config for version you bould like
 6. Select x64 platform
 7. Select Build -> Build Solution
+
+## TODO
+Computer\HKEY_CURRENT_USER\SOFTWARE\Downpour Interactive\Onward\LastSteamWebAPIRequest_h1952494584
+
+Need to delete with spoofed steam id

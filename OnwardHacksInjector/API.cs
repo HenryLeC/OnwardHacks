@@ -206,8 +206,8 @@ namespace AuthGG
                         {
                             if (ApplicationSettings.Version != Version)
                             {
-                                Console.WriteLine($"Update {ApplicationSettings.Version} available, redirecting to update!");
-                                Process.Start(ApplicationSettings.Update_Link);
+                                Console.WriteLine($"Update {ApplicationSettings.Version} available, Download Here {ApplicationSettings.Update_Link}");
+                                //Process.Start(ApplicationSettings.Update_Link);
 
                             }
                             if (response[12] == "Enabled")

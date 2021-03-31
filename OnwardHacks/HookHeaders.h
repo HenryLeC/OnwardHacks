@@ -49,6 +49,10 @@ tGetFactionColors oGetFactionColors;
 typedef bool(__fastcall* tRecalculatePoints)(uintptr_t);
 tRecalculatePoints oRecalculatePoints;
 
+// GetSteamId
+typedef uintptr_t(__fastcall* tGetSteamID)(uintptr_t);
+tGetSteamID oGetSteamID;
+
 // Function Offsets
 // SpectateOutline
 extern uintptr_t SetOutlineActive_offset = 0x380030;
@@ -65,3 +69,5 @@ extern uintptr_t GetFactionColors_offset = 0x12BE030;
 extern uintptr_t GetPlayerFaction_offset = 0x12ADFD0;
 // TentLoadoutEdit
 extern uintptr_t RecalculatePoints_offset = 0x541E00;
+// Get Steam ID
+extern uintptr_t GetSteamID_offset = 0x1608830;
