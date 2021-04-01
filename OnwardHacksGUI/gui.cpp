@@ -83,30 +83,43 @@ int mainGUI()
         {
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Visuals:");
+            ImGui::TextColored(ImVec4(1, 0, 1, 1), "Visuals:");
             ImGui::Checkbox("Chams", &ESP);
             ImGui::Text("");
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Uplink:");
             ImGui::Checkbox("Auto-Cap", &AutoCap);
             ImGui::Checkbox("Any Code Cap", &AnyCodeCap);
             ImGui::Text("");
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Gun Mods:");
+            ImGui::Indent(1.0f);
+            ImGui::Unindent(1.0f);
+            ImGui::TextColored(ImVec4(0, 1, 1, 1), "Gun Mods:");
+            ImGui::Indent(1.0f);
             ImGui::Checkbox("No Recoil", &NoRecoil);
             ImGui::Checkbox("Set custom damage", &bMaxDamage);
-            ImGui::Text("Set custom damage (2000 - instakill)");
-            ImGui::SliderInt("###MaxDamage", &iMaxDamage, 0, 2000);
+            if (bMaxDamage == true)
+            {
+                ImGui::Text("Set custom damage (2000 - instakill)");
+                ImGui::SliderInt("###MaxDamage", &iMaxDamage, 1, 2000);
+            }
             ImGui::Checkbox("Gun RPM", &bMaxRPM);
-            ImGui::Text("Set Gun RPM (2000 - insanly fast)");
-            ImGui::SliderInt("###MaxRPM", &iMaxRPM, 1, 200);
+            if (bMaxRPM == true)
+            {
+                ImGui::Text("Set Gun RPM (2000 - insanly fast)");
+                ImGui::SliderInt("###MaxRPM", &iMaxRPM, 1, 2000);
+            }
             ImGui::Checkbox("Fast Burst", &FastBurst);
-            ImGui::Text("Set Bursts Per Shot");
-            ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);
+            if (FastBurst == true)
+            {
+                ImGui::Text("Set Bursts Per Shot:");
+                ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);
+            }
             ImGui::Checkbox("Infinite Ammo", &InfiniteAmmo);
+            ImGui::Unindent(1.0f);
             ImGui::Text("");
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Spoofing:");
+            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Spoofing:");
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
             ImGui::Text("");
-            ImGui::TextColored(ImVec4(1, 1, 0, 1), "Others:");
+            ImGui::TextColored(ImVec4(0, 1, 0, 1), "Others:");
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
             ImGui::Text("");
             if (ImGui::Button("Disinject Hacks")) {
