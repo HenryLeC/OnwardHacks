@@ -97,7 +97,7 @@ int mainGUI()
             ImGui::SliderInt("###MaxDamage", &iMaxDamage, 0, 2000);
             ImGui::Checkbox("Gun RPM", &bMaxRPM);
             ImGui::Text("Set Gun RPM (2000 - insanly fast)");
-            ImGui::SliderInt("###MaxRPM", &iMaxRPM, 0, 200);
+            ImGui::SliderInt("###MaxRPM", &iMaxRPM, 1, 200);
             ImGui::Checkbox("Fast Burst", &FastBurst);
             ImGui::Text("Set Bursts Per Shot");
             ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);
