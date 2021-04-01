@@ -9,8 +9,9 @@
 #include "Detours/detours.h"
 #include "HookHeaders.h"
 #include "Speedhack.h"
+#include "gui.h"
 
-// idk wtf this is
+// idk wtf this is;
 bool RegEditing = true;
 
 // Random
@@ -21,11 +22,11 @@ uintptr_t colorScheme;
 // Hacks Settings
 int shotsPerBurst = 6;
 // Gun
-float damageSetting = 2000;
+int damageSetting = 2000;
 float rofSetting = 0.00000001;
 
 enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF, SpeedHack };
-enum HackSettings {NeedCode};
+enum HackSettings { NeedCode };
 
 std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
 	{ESP, false},
@@ -41,13 +42,29 @@ std::unordered_map<HackSettings, bool> hacksSettings = {
 	{NeedCode, false}
 };
 
+static bool bESP = false;
+static bool bNoRecoil = false;
+static bool bFastBurst = false;
+static bool bAutoCap = false;
+static bool bMaxHealth = false;
+static bool bMaxDamage = false;
+static bool bMaxROF = false;
+static bool bSpeedHack = false;
+static bool bAnyCodeCap = false;
+static bool bMaxRPM = false;
+static bool bInfiniteAmmo = false;
+static bool bSteamIdSppof = false;
+static bool bInfinitePoints = false;
+
+int iMaxRPM = 1;
+
 // Original Params
 std::map<uintptr_t, float> defaultDamage = {};
 std::map<uintptr_t, float> defaultRof = {};
 
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
-	if (enabledHacks[ESP]) {
+	if (bESP) {
 		uintptr_t player = *(uintptr_t*)(pThis + 0x18);
 		int faction = oGetPlayerFaction(player);
 		if (faction == 1) {
@@ -83,7 +100,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// No Recoil
-	if (enabledHacks[NoRecoil]) {
+	if (bNoRecoil) {
 		*noRcoil = true;
 	}
 	else {
@@ -91,7 +108,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// Infinite Ammo
-	if (enabledHacks[InfiniteAmmo]) {
+	if (bInfiniteAmmo) {
 		*infAmmo = true;
 	}
 	else {
@@ -99,7 +116,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// Damage
-	if (enabledHacks[MaxDamage]) {
+	if (bMaxDamage) {
 		*damage = damageSetting;
 	}
 	else {
@@ -107,14 +124,14 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// ROF
-	if (enabledHacks[MaxROF]) {
+	if (bMaxROF) {
 		*rof = rofSetting;
 	}
 	else {
 		*rof = defaultRof[weapon];
 	}
 
-	if (enabledHacks[FastBurst]) {
+	if (bFastBurst) {
 		for (int i = shotsPerBurst - 1; i <= 5; i++) {
 			oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 		}
@@ -127,14 +144,14 @@ void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
 	//std::cout << pThis << std::endl;
 	oCodeManagerAwake(pThis);
 	// Auto Cap if no need for code and hack enabled
-	if (enabledHacks[AutoCap] && !hacksSettings[NeedCode]) {
+	if (bAutoCap && bAnyCodeCap) {
 		oDoCodeCorrect(pThis);
 	}
 }
 
 // Check Code Numbers
 void __fastcall hkCheckNumbers(uintptr_t pThis) {
-	if (enabledHacks[AutoCap] && hacksSettings[NeedCode]) {
+	if (bAutoCap && !bAnyCodeCap) {
 		return oDoCodeCorrect(pThis);
 	}
 	else {
@@ -196,20 +213,20 @@ void EditRegKeys() {
 )"""";
 	RegFile.close();
 	while (RegEditing) {
-		std::system("REG IMPORT OnwardRegPatch.reg >nul 2>nul");
+		//CreateProcessA("REG IMPORT OnwardRegPatch.reg >nul 2>nul", SW_HIDE);
 	}
 }
 
 DWORD WINAPI HackThread(HMODULE hModule) {
 	//Create Console
-	AllocConsole();
+	/*AllocConsole();
 	FILE* f;
 	freopen_s(&f, "CONOUT$", "w", stdout);
 	freopen_s(&f, "CONIN$", "r", stdin);
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	std::string key;
+	std::string key;*/
 
 	std::thread RegPatch(EditRegKeys);
 	RegPatch.detach();
@@ -219,106 +236,108 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 
 	bool running = true;
 	
-	system("cls"); // Clear Console
-	SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+	//system("cls"); // Clear Console
+	//SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
 	// Onward Hax Text
-	std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
-	std::cout << "Injecting..." << std::endl;
+	/*std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
+	std::cout << "Injecting..." << std::endl;*/
 
-	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-#if SILENT
-	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst \n[5] Auto-Cap \n[6] Maxed Damage \n[7] Max Rate Of Fire\n[8] Speedhack\n[-1] Disinject Hacks\n[0] Help \n";
-#endif
-#if BLATANT
-	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst (Disabled) \n[5] Any Code Capper \n[6] Maxed Damage (Disabled) \n[7] Max Rate Of Fire \n[8] Speedhack \n[-1] Disinject Hacks\n[0] Help \n";
-#endif
-	std::cout << inputPre;
-	
+	mainGUI(bESP, bAutoCap, bAnyCodeCap, bNoRecoil, bMaxDamage, damageSetting, bMaxRPM, iMaxRPM, bInfiniteAmmo, bSteamIdSppof, bInfinitePoints);
 
-	while (running)
-	{
-		int input;
-		// Get Input
-		std::cin >> input;
-		switch (input) {
-		case 1:
-			enabledHacks[ESP] = !enabledHacks[ESP];
-			std::cout << "ESP enabled: " << enabledHacks[ESP] << std::endl;
-			break;
-		case 2:
-			enabledHacks[NoRecoil] = !enabledHacks[NoRecoil];
-			std::cout << "No Recoil enabled: " << enabledHacks[NoRecoil] << std::endl;
-			break;
-		case 3:
-			enabledHacks[InfiniteAmmo] = !enabledHacks[InfiniteAmmo];
-			std::cout << "Infinite Ammo enabled: " << enabledHacks[InfiniteAmmo] << std::endl;
-			break;
-		case 4:
-#if SILENT
-			enabledHacks[FastBurst] = !enabledHacks[FastBurst];
-			std::cout << "Rounds Per Burst: ";
-			std::cin >> shotsPerBurst;
-			std::cout << "Fast Burst enabled: " << enabledHacks[FastBurst] << std::endl;
-#endif
-#if BLATANT
-			std::cout << "Fast Burst is Disabled in this package" << std::endl;
-#endif
-			break;
-		case 5:
-			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
-#if SILENT
-			if (enabledHacks[AutoCap]) {
-				std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
-				std::cin >> hacksSettings[NeedCode];
-			}
-#endif
-#if BLATANT
-			hacksSettings[NeedCode] = true;
-#endif
-			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
-			break;
-		case 6:
-#if SILENT
-			enabledHacks[MaxDamage] = !enabledHacks[MaxDamage];
-			std::cout << "Enter Damage per round (2000) for instant death: ";
-			std::cin >> damageSetting;
-			std::cout << "Max Damage enabled: " << enabledHacks[MaxDamage] << std::endl;
-#endif
-#if BLATANT
-			std::cout << "Max Damage is Disabled in this package" << std::endl;
-#endif
-			break;
-		case 7:
-			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
-			std::cout << "Enter Rate of fire in rpm: ";
-			int rof;
-			std::cin >> rof;
-			rofSetting = 60 / rof;
-
-			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
-			break;
-		case 8:
-			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
-			if (enabledHacks[SpeedHack]) {
-				std::cout << "Enter Speed Multiplier: ";
-				float SpeedMul;
-				std::cin >> SpeedMul;
-				Speedhack::SetSpeed(SpeedMul);
-			}
-			else {
-				Speedhack::SetSpeed(1.0);
-			}
-			std::cout << "Speed Hack enabled: " << enabledHacks[SpeedHack] << std::endl;
-			break;
-		case -1:
-			RegEditing = false;
-			running = false;
-			break;
-		case 0:
-			std::cout << "Type the number cooresponding to the option you would like and press enter" << std::endl;
-			break;
-		}
-		std::cout << inputPre;
+//	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+//#if SILENT
+//	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst \n[5] Auto-Cap \n[6] Maxed Damage \n[7] Max Rate Of Fire\n[8] Speedhack\n[-1] Disinject Hacks\n[0] Help \n";
+//#endif
+//#if BLATANT
+//	std::cout << "[1] ESP \n[2] No Recoil \n[3] Infinite Ammo \n[4] Fast Burst (Disabled) \n[5] Any Code Capper \n[6] Maxed Damage (Disabled) \n[7] Max Rate Of Fire \n[8] Speedhack \n[-1] Disinject Hacks\n[0] Help \n";
+//#endif
+//	std::cout << inputPre;
+//	
+//
+//	while (running)
+//	{
+//		int input;
+//		// Get Input
+//		std::cin >> input;
+//		switch (input) {
+//		case 1:
+//			enabledHacks[ESP] = !enabledHacks[ESP];
+//			std::cout << "ESP enabled: " << enabledHacks[ESP] << std::endl;
+//			break;
+//		case 2:
+//			enabledHacks[NoRecoil] = !enabledHacks[NoRecoil];
+//			std::cout << "No Recoil enabled: " << enabledHacks[NoRecoil] << std::endl;
+//			break;
+//		case 3:
+//			enabledHacks[InfiniteAmmo] = !enabledHacks[InfiniteAmmo];
+//			std::cout << "Infinite Ammo enabled: " << enabledHacks[InfiniteAmmo] << std::endl;
+//			break;
+//		case 4:
+//#if SILENT
+//			enabledHacks[FastBurst] = !enabledHacks[FastBurst];
+//			std::cout << "Rounds Per Burst: ";
+//			std::cin >> shotsPerBurst;
+//			std::cout << "Fast Burst enabled: " << enabledHacks[FastBurst] << std::endl;
+//#endif
+//#if BLATANT
+//			std::cout << "Fast Burst is Disabled in this package" << std::endl;
+//#endif
+//			break;
+//		case 5:
+//			enabledHacks[AutoCap] = !enabledHacks[AutoCap];
+//#if SILENT
+//			if (enabledHacks[AutoCap]) {
+//				std::cout << "Type 0 to not require typing in code, or 1 to require a code: ";
+//				std::cin >> hacksSettings[NeedCode];
+//			}
+//#endif
+//#if BLATANT
+//			hacksSettings[NeedCode] = true;
+//#endif
+//			std::cout << "Auto Cap enabled: " << enabledHacks[AutoCap] << std::endl;
+//			break;
+//		case 6:
+//#if SILENT
+//			enabledHacks[MaxDamage] = !enabledHacks[MaxDamage];
+//			std::cout << "Enter Damage per round (2000) for instant death: ";
+//			std::cin >> damageSetting;
+//			std::cout << "Max Damage enabled: " << enabledHacks[MaxDamage] << std::endl;
+//#endif
+//#if BLATANT
+//			std::cout << "Max Damage is Disabled in this package" << std::endl;
+//#endif
+//			break;
+//		case 7:
+//			enabledHacks[MaxROF] = !enabledHacks[MaxROF];
+//			std::cout << "Enter Rate of fire in rpm: ";
+//			int rof;
+//			std::cin >> rof;
+//			rofSetting = 60 / rof;
+//
+//			std::cout << "Max Rate Of Fire enabled: " << enabledHacks[MaxROF] << std::endl;
+//			break;
+//		case 8:
+//			enabledHacks[SpeedHack] = !enabledHacks[SpeedHack];
+//			if (enabledHacks[SpeedHack]) {
+//				std::cout << "Enter Speed Multiplier: ";
+//				float SpeedMul;
+//				std::cin >> SpeedMul;
+//				Speedhack::SetSpeed(SpeedMul);
+//			}
+//			else {
+//				Speedhack::SetSpeed(1.0);
+//			}
+//			std::cout << "Speed Hack enabled: " << enabledHacks[SpeedHack] << std::endl;
+//			break;
+//		case -1:
+//			RegEditing = false;
+//			running = false;
+//			break;
+//		case 0:
+//			std::cout << "Type the number cooresponding to the option you would like and press enter" << std::endl;
+//			break;
+//		}
+//		std::cout << inputPre;
 		////Keypress listening
 		//if (GetAsyncKeyState(VK_NUMPAD1) & 1) {
 		//	espEnabled = !espEnabled;
@@ -340,14 +359,17 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 		//else if (GetAsyncKeyState(VK_NUMPAD0) & 1) {
 		//	break;
 		//}
-	}
+//	}
 
-	if (f) {
+	// Disinject Procedure
+	RegEditing = false;
+
+	/*if (f) {
 		fclose(f);
 		fclose(stdout);
 		fclose(stdin);
 	}
-	FreeConsole();
+	FreeConsole();*/
 	FreeLibraryAndExitThread(hModule, 0);
 	return 0;
 }
