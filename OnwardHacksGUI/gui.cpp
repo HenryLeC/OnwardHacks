@@ -1,12 +1,11 @@
-#include "pch.h"
 #include "gui.h"
 #include "imgui.h"
 #include "imgui_impl_dx9.h"
 #include "imgui_impl_win32.h"
 #include <d3d9.h>
 #include <tchar.h>
-#include "Enums.h"
 #include <unordered_map>
+#include "HacksSettings.h"
 #pragma comment(lib, "d3d9.lib")
 
 // Data
@@ -21,7 +20,7 @@ void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // Main code
-int mainGUI(bool ESP, bool AutoCap, bool AnyCodeCap, bool NoRecoil, bool bMaxDamage, int iMaxDamage, bool bMaxRPM, int iMaxRPM, bool InfiniteAmmo, bool SteamIDSpoofer, bool InfinitePoints)
+int mainGUI()
 {
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();

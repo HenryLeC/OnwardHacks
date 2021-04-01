@@ -188,7 +188,6 @@ Index of this file:
 #endif
 
 #include "imgui.h"
-#include "../pch.h"
 #ifndef IMGUI_DISABLE
 
 #ifndef IMGUI_DEFINE_MATH_OPERATORS

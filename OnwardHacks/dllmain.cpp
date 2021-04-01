@@ -9,54 +9,12 @@
 #include "Detours/detours.h"
 #include "HookHeaders.h"
 #include "Speedhack.h"
-#include "gui.h"
+#include "../OnwardHacksGUI/gui.h"
+#include "../OnwardHacksGUI/HacksSettings.h"
 
 // idk wtf this is;
 bool RegEditing = true;
-
-// Random
-const std::string inputPre = ">>> ";
-uintptr_t currentPlayer;
 uintptr_t colorScheme;
-
-// Hacks Settings
-int shotsPerBurst = 6;
-// Gun
-int damageSetting = 2000;
-float rofSetting = 0.00000001;
-
-enum Hacks { ESP, NoRecoil, InfiniteAmmo, FastBurst, AutoCap, MaxHealth, MaxDamage, MaxROF, SpeedHack };
-enum HackSettings { NeedCode };
-
-std::unordered_map< Hacks, bool, std::hash<int> > enabledHacks = {
-	{ESP, false},
-	{NoRecoil, false},
-	{InfiniteAmmo, false},
-	{FastBurst, false},
-	{AutoCap, false},
-	{MaxHealth, false},
-	{MaxDamage, false},
-	{SpeedHack, false},
-};
-std::unordered_map<HackSettings, bool> hacksSettings = {
-	{NeedCode, false}
-};
-
-static bool bESP = false;
-static bool bNoRecoil = false;
-static bool bFastBurst = false;
-static bool bAutoCap = false;
-static bool bMaxHealth = false;
-static bool bMaxDamage = false;
-static bool bMaxROF = false;
-static bool bSpeedHack = false;
-static bool bAnyCodeCap = false;
-static bool bMaxRPM = false;
-static bool bInfiniteAmmo = false;
-static bool bSteamIdSppof = false;
-static bool bInfinitePoints = false;
-
-int iMaxRPM = 1;
 
 // Original Params
 std::map<uintptr_t, float> defaultDamage = {};
@@ -64,7 +22,7 @@ std::map<uintptr_t, float> defaultRof = {};
 
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
-	if (bESP) {
+	if (ESP) {
 		uintptr_t player = *(uintptr_t*)(pThis + 0x18);
 		int faction = oGetPlayerFaction(player);
 		if (faction == 1) {
@@ -100,7 +58,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// No Recoil
-	if (bNoRecoil) {
+	if (NoRecoil) {
 		*noRcoil = true;
 	}
 	else {
@@ -108,7 +66,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	// Infinite Ammo
-	if (bInfiniteAmmo) {
+	if (InfiniteAmmo) {
 		*infAmmo = true;
 	}
 	else {
@@ -117,22 +75,22 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 
 	// Damage
 	if (bMaxDamage) {
-		*damage = damageSetting;
+		*damage = iMaxDamage;
 	}
 	else {
 		*damage = defaultDamage[weapon];
 	}
 
 	// ROF
-	if (bMaxROF) {
-		*rof = rofSetting;
+	if (bMaxRPM) {
+		*rof = iMaxRPM;
 	}
 	else {
 		*rof = defaultRof[weapon];
 	}
 
-	if (bFastBurst) {
-		for (int i = shotsPerBurst - 1; i <= 5; i++) {
+	if (FastBurst) {
+		for (int i = iFastBurst - 1; i <= 5; i++) {
 			oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 		}
 	}
@@ -144,14 +102,14 @@ void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
 	//std::cout << pThis << std::endl;
 	oCodeManagerAwake(pThis);
 	// Auto Cap if no need for code and hack enabled
-	if (bAutoCap && bAnyCodeCap) {
+	if (AutoCap && AnyCodeCap) {
 		oDoCodeCorrect(pThis);
 	}
 }
 
 // Check Code Numbers
 void __fastcall hkCheckNumbers(uintptr_t pThis) {
-	if (bAutoCap && !bAnyCodeCap) {
+	if (AutoCap && !AnyCodeCap) {
 		return oDoCodeCorrect(pThis);
 	}
 	else {
@@ -242,7 +200,7 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	/*std::cout << "                                                                                                                 \n    ,----..                                                                         ,--,                         \n   /   /   \\                                                                      ,--.\'|                         \n  /   .     :                                                  ,---,           ,--,  | :                         \n .   /   ;.  \\      ,---,         .---.             __  ,-.  ,---.\'|        ,---.\'|  : \'                         \n.   ;   /  ` ;  ,-+-. /  |       /. ./|           ,\' ,\'/ /|  |   | :        |   | : _\' |             ,--,  ,--,  \n;   |  ; \\ ; | ,--.\'|\'   |    .-\'-. \' |  ,--.--.  \'  | |\' |  |   | |        :   : |.\'  |  ,--.--.    |\'. \\/ .`|  \n|   :  | ; | \'|   |  ,\"\' |   /___/ \\: | /       \\ |  |   ,\',--.__| |        |   \' \'  ; : /       \\   \'  \\/  / ;  \n.   |  \' \' \' :|   | /  | |.-\'.. \'   \' ..--.  .-. |\'  :  / /   ,\'   |        \'   |  .\'. |.--.  .-. |   \\  \\.\' /   \n\'   ;  \\; /  ||   | |  | /___/ \\:     \' \\__\\/: . .|  | \' .   \'  /  |        |   | :  | \' \\__\\/: . .    \\  ;  ;   \n \\   \\  \',  / |   | |  |/.   \\  \' .\\    ,\" .--.; |;  : | \'   ; |:  |        \'   : |  : ; ,\" .--.; |   / \\  \\  \\  \n  ;   :    /  |   | |--\'  \\   \\   \' \\ |/  /  ,.  ||  , ; |   | \'/  \'        |   | \'  ,/ /  /  ,.  | ./__;   ;  \\ \n   \\   \\ .\'   |   |/       \\   \\  |--\";  :   .\'   \\---\'  |   :    :|        ;   : ;--\' ;  :   .\'   \\|   :/\\  \\ ; \n    `---`     \'---\'         \\   \\ |   |  ,     .-./       \\   \\  /          |   ,/     |  ,     .-./`---\'  `--`  \n                             \'---\"     `--`---\'            `----\'           \'---\'       `--`---\'                 \n                                                                                                                 \n" << std::endl;
 	std::cout << "Injecting..." << std::endl;*/
 
-	mainGUI(bESP, bAutoCap, bAnyCodeCap, bNoRecoil, bMaxDamage, damageSetting, bMaxRPM, iMaxRPM, bInfiniteAmmo, bSteamIdSppof, bInfinitePoints);
+	mainGUI();
 
 //	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 //#if SILENT

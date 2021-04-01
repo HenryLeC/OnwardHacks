@@ -20,37 +20,64 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OnwardHacksGUI", "OnwardHacksGUI\OnwardHacksGUI.vcxproj", "{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BlatantDebug|x64 = BlatantDebug|x64
+		BlatantDebug|x86 = BlatantDebug|x86
 		BlatantRelease|x64 = BlatantRelease|x64
+		BlatantRelease|x86 = BlatantRelease|x86
 		SilentDebug|x64 = SilentDebug|x64
+		SilentDebug|x86 = SilentDebug|x86
 		SilentRelease|x64 = SilentRelease|x64
+		SilentRelease|x86 = SilentRelease|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantDebug|x64.ActiveCfg = BlatantDebug|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantDebug|x64.Build.0 = BlatantDebug|x64
+		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantDebug|x86.ActiveCfg = BlatantDebug|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantRelease|x64.ActiveCfg = BlatantRelease|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantRelease|x64.Build.0 = BlatantRelease|x64
+		{45278E48-D23C-4DCB-8E03-016A710151B4}.BlatantRelease|x86.ActiveCfg = BlatantRelease|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentDebug|x64.ActiveCfg = SilentDebug|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentDebug|x64.Build.0 = SilentDebug|x64
+		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentDebug|x86.ActiveCfg = SilentDebug|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentRelease|x64.ActiveCfg = SilentRelease|x64
 		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentRelease|x64.Build.0 = SilentRelease|x64
+		{45278E48-D23C-4DCB-8E03-016A710151B4}.SilentRelease|x86.ActiveCfg = SilentRelease|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantDebug|x64.ActiveCfg = BlatantDebug|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantDebug|x64.Build.0 = BlatantDebug|x64
+		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantDebug|x86.ActiveCfg = BlatantDebug|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantRelease|x64.ActiveCfg = BlatantRelease|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantRelease|x64.Build.0 = BlatantRelease|x64
+		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.BlatantRelease|x86.ActiveCfg = BlatantRelease|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentDebug|x64.ActiveCfg = SilentDebug|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentDebug|x64.Build.0 = SilentDebug|x64
+		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentDebug|x86.ActiveCfg = SilentDebug|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentRelease|x64.ActiveCfg = SilentRelease|x64
 		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentRelease|x64.Build.0 = SilentRelease|x64
+		{03FA7BE2-C958-493A-857E-E1AA537C8D05}.SilentRelease|x86.ActiveCfg = SilentRelease|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantDebug|x64.ActiveCfg = BlatantDebug|x64
+		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantDebug|x64.Build.0 = BlatantDebug|x64
+		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantDebug|x86.ActiveCfg = BlatantDebug|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantRelease|x64.ActiveCfg = BlatantRelease|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantRelease|x64.Build.0 = BlatantRelease|x64
+		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.BlatantRelease|x86.ActiveCfg = BlatantRelease|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentDebug|x64.ActiveCfg = SilentDebug|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentDebug|x64.Build.0 = SilentDebug|x64
+		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentDebug|x86.ActiveCfg = SilentDebug|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentRelease|x64.ActiveCfg = SilentRelease|x64
 		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentRelease|x64.Build.0 = SilentRelease|x64
+		{9DE15FE1-58C3-4FF7-88FC-F20A468168DC}.SilentRelease|x86.ActiveCfg = SilentRelease|x64
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.BlatantDebug|x64.ActiveCfg = BlatantDebug|x64
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.BlatantDebug|x86.ActiveCfg = BlatantDebug|Win32
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.BlatantRelease|x64.ActiveCfg = BlatantRelease|x64
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.BlatantRelease|x86.ActiveCfg = BlatantRelease|Win32
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.SilentDebug|x64.ActiveCfg = SilentDebug|x64
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.SilentDebug|x86.ActiveCfg = SilentDebug|Win32
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.SilentRelease|x64.ActiveCfg = SilentRelease|x64
+		{B1AD322F-EC3D-4487-9B76-7FDA9A28280F}.SilentRelease|x86.ActiveCfg = SilentRelease|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
