@@ -98,6 +98,9 @@ int mainGUI()
             ImGui::Checkbox("Gun RPM", &bMaxRPM);
             ImGui::Text("Set Gun RPM (2000 - insanly fast)");
             ImGui::SliderInt("###MaxRPM", &iMaxRPM, 0, 200);
+            ImGui::Checkbox("Fast Burst", &FastBurst);
+            ImGui::Text("Set Bursts Per Shot");
+            ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);
             ImGui::Checkbox("Infinite Ammo", &InfiniteAmmo);
             ImGui::Text("");
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Spoofing:");
@@ -106,7 +109,9 @@ int mainGUI()
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Others:");
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
             ImGui::Text("");
-            ImGui::Button("Disinject Hacks");
+            if (ImGui::Button("Disinject Hacks")) {
+                done = true;
+            }
             ImGui::End();
         }
 
