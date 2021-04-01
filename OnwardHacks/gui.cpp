@@ -95,10 +95,10 @@ int mainGUI(bool ESP, bool AutoCap, bool AnyCodeCap, bool NoRecoil, bool bMaxDam
             ImGui::Checkbox("No Recoil", &NoRecoil);
             ImGui::Checkbox("Set custom damage", &bMaxDamage);
             ImGui::Text("Set custom damage (2000 - instakill)");
-            ImGui::SliderInt("", &iMaxDamage, 0, 2000);
+            ImGui::SliderInt("###MaxDamage", &iMaxDamage, 0, 2000);
             ImGui::Checkbox("Gun RPM", &bMaxRPM);
             ImGui::Text("Set Gun RPM (2000 - insanly fast)");
-            ImGui::SliderInt("", &iMaxRPM, 0, 200);
+            ImGui::SliderInt("###MaxRPM", &iMaxRPM, 0, 200);
             ImGui::Checkbox("Infinite Ammo", &InfiniteAmmo);
             ImGui::Text("");
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Spoofing:");
