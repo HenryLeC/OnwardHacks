@@ -83,6 +83,20 @@ extern uintptr_t GetSteamID_offset;
 
 uintptr_t __fastcall hkGetSteamID(uintptr_t pThis);
 
+// isDeveloper
+typedef bool(__fastcall* tisDeveloper)(uintptr_t);
+extern tisDeveloper oisDeveloper;
+extern uintptr_t isDeveloper_offset;
+
+bool __fastcall hkisDeveloper(uintptr_t pThis);
+
+// GetPenetrationInfo
+typedef uintptr_t(__fastcall* tGetPenetrationInfo)(uintptr_t, uintptr_t);
+extern tGetPenetrationInfo oGetPenetrationInfo;
+extern uintptr_t GetPenetrationInfo_offset;
+
+uintptr_t __fastcall hkGetPenetrationInfo(uintptr_t pThis, uintptr_t physMat);
+
 // Steam ID Registry Edit
 void EditRegKeys();
 void KillRegPatch();

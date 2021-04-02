@@ -4,82 +4,10 @@
 #include <fstream>
 #include "Hooks.h"
 #include <thread>
+#include <iostream>
 
 // globals
 bool Running = true;
-
-// SetOutlineActive
-typedef void(__fastcall* tSetOutlineActive)(uintptr_t, bool);
-tSetOutlineActive oSetOutlineActive;
-
-// SetOutlineColor
-typedef void(__fastcall* tSetOutlineColor)(uintptr_t, uintptr_t);
-tSetOutlineColor oSetOutlineColor;
-
-// Fire Weapon
-typedef void(__fastcall* tFireWeapon)(uintptr_t, uintptr_t, uintptr_t, void*);
-tFireWeapon oFireWeapon;
-
-// Set Current Ammo
-typedef void(__fastcall* tSetCurrentAmmo)(uintptr_t, INT32);
-tSetCurrentAmmo oSetCurrentAmmo;
-
-// CodeManagerAwake
-typedef void(__fastcall* tCodeManagerAwake)(uintptr_t);
-tCodeManagerAwake oCodeManagerAwake;
-
-// CheckNumbers
-typedef void(__fastcall* tCheckNumbers)(uintptr_t);
-tCheckNumbers oCheckNumbers;
-
-// DoCodeCorrect
-typedef void(__fastcall* tDoCodeCorrect)(uintptr_t);
-tDoCodeCorrect oDoCodeCorrect;
-
-// WarPlayerAwake
-typedef void(__fastcall* tWarPlayerAwake)(uintptr_t);
-tWarPlayerAwake oWarPlayerAwake;
-
-// Get Player Faction
-typedef int(__fastcall* tGetPlayerFaction)(uintptr_t);
-tGetPlayerFaction oGetPlayerFaction;
-
-// Set Invicincibity
-typedef void(__fastcall* tSetManualInvincibility)(uintptr_t, bool);
-tSetManualInvincibility oSetManualInvincibility;
-
-// Get Faction Colors
-typedef uintptr_t(__fastcall* tGetFactionColors)(uintptr_t, uintptr_t);
-tGetFactionColors oGetFactionColors;
-
-// RecalculatePoints
-typedef bool(__fastcall* tRecalculatePoints)(uintptr_t);
-tRecalculatePoints oRecalculatePoints;
-
-// GetSteamId
-typedef uintptr_t(__fastcall* tGetSteamID)(uintptr_t);
-tGetSteamID oGetSteamID;
-
-// Function Offsets
-// SpectateOutline
-uintptr_t SetOutlineActive_offset = 0x380030;
-uintptr_t SetOutlineColor_offset = 0x3800C0;
-// Weapon
-uintptr_t FireWeapon_offset = 0x420220;
-// CodeManager
-uintptr_t CodeManagerAwake_offset = 0x12BBE20;
-uintptr_t CheckNumbers_offset = 0x12BC0F0;
-uintptr_t DoCodeCorrect_offset = 0x12BC4A0;
-// Color Scheme
-uintptr_t GetFactionColors_offset = 0x12BE030;
-// War Player Script
-uintptr_t GetPlayerFaction_offset = 0x12ADFD0;
-// TentLoadoutEdit
-uintptr_t RecalculatePoints_offset = 0x541E00;
-// Get Steam ID
-uintptr_t GetSteamID_offset = 0x1608830;
-
-// idk wtf this is;
 uintptr_t colorScheme;
 
 // Original Params
@@ -87,10 +15,68 @@ std::map<uintptr_t, float> defaultDamage = {};
 std::map<uintptr_t, float> defaultRof = {};
 
 // SetOutlineActive
+tSetOutlineActive oSetOutlineActive;
+uintptr_t SetOutlineActive_offset = 0x380030;
+
+// SetOutlineColor
+tSetOutlineColor oSetOutlineColor;
+uintptr_t SetOutlineColor_offset = 0x3800C0;
+
+// Fire Weapon
+tFireWeapon oFireWeapon;
+uintptr_t FireWeapon_offset = 0x420220;
+
+// Set Current Ammo
+tSetCurrentAmmo oSetCurrentAmmo;
+
+// CodeManagerAwake
+tCodeManagerAwake oCodeManagerAwake;
+uintptr_t CodeManagerAwake_offset = 0x12BBE20;
+
+// CheckNumbers
+tCheckNumbers oCheckNumbers;
+uintptr_t CheckNumbers_offset = 0x12BC0F0;
+
+// DoCodeCorrect
+tDoCodeCorrect oDoCodeCorrect;
+uintptr_t DoCodeCorrect_offset = 0x12BC4A0;
+
+// WarPlayerAwake
+tWarPlayerAwake oWarPlayerAwake;
+
+// Get Player Faction
+tGetPlayerFaction oGetPlayerFaction;
+uintptr_t GetPlayerFaction_offset = 0x12ADFD0;
+
+// Set Invicincibity
+tSetManualInvincibility oSetManualInvincibility;
+
+// Get Faction Colors
+tGetFactionColors oGetFactionColors;
+uintptr_t GetFactionColors_offset = 0x12BE030;
+
+// RecalculatePoints
+tRecalculatePoints oRecalculatePoints;
+uintptr_t RecalculatePoints_offset = 0x541E00;
+
+// GetSteamId
+tGetSteamID oGetSteamID;
+uintptr_t GetSteamID_offset = 0x1608830;
+
+// IsPasswordValid
+tisDeveloper oisDeveloper;
+uintptr_t isDeveloper_offset = 0x12EAD60;
+
+// GetPenetrationInfo
+tGetPenetrationInfo oGetPenetrationInfo;
+uintptr_t GetPenetrationInfo_offset = 0x51FFE0;
+
+// SetOutlineActive
 void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
 	if (ESP) {
 		uintptr_t player = *(uintptr_t*)(pThis + 0x18);
 		int faction = oGetPlayerFaction(player);
+		int playerState = *(int*)(player + 0x9c);
 		if (colorScheme) {
 			if (faction == 1) {
 				oSetOutlineColor(pThis, colorScheme + 0x58);
@@ -98,6 +84,16 @@ void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
 			else if (faction == 2) {
 				oSetOutlineColor(pThis, colorScheme + 0x48);
 			}
+		}
+		// Dead
+		if (playerState == 2) {
+			return oSetOutlineActive(pThis, active);
+		}
+		// Downed
+		else if (playerState == 1) {
+			uintptr_t color = *(uintptr_t*)(colorScheme + 0x48);
+			*(float*)(color + 0x4) = 255;
+			oSetOutlineColor(pThis, color);
 		}
 		return oSetOutlineActive(pThis, true);
 	}
@@ -284,4 +280,22 @@ goto loop
 void KillRegPatch() {
 	std::ofstream KillRegFile("killRegPatch");
 	KillRegFile.close();
+}
+
+// isDeveloper
+bool __fastcall hkisDeveloper(uintptr_t pThis) {
+	std::cout << std::hex << pThis << std::dec << std::endl;
+	oisDeveloper(pThis);
+	return true;
+}
+
+// GetPenetrationInfo
+uintptr_t __fastcall hkGetPenetrationInfo(uintptr_t pThis, uintptr_t physMat) {
+	uintptr_t penInfo = oGetPenetrationInfo(pThis, physMat);
+	if (penInfo != 0) {
+		*(bool*)(penInfo + 0x2c) = true;
+		*(bool*)(penInfo + 0x2d) = true;
+		std::cout << std::hex << penInfo << std::dec << std::endl;
+	}
+	return penInfo;
 }
