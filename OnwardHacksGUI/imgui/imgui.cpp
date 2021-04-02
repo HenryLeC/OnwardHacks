@@ -5583,13 +5583,19 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
     float pad_r = style.FramePadding.x;
     float button_sz = g.FontSize;
     ImVec2 close_button_pos;
-    ImVec2 collapse_button_pos;
+    
     if (has_close_button)
     {
         pad_r += button_sz;
         close_button_pos = ImVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
     }
-    if (has_collapse_button && style.WindowMenuButtonPosition == ImGuiDir_Right)
+    
+    
+    /////////////////////////////////////////////////////////////////
+    //                          CHR0MY HAS EDITED THIS OUT 
+    //
+    ///////////////////////////////////////////////////////
+    /*if (has_collapse_button && style.WindowMenuButtonPosition == ImGuiDir_Right)
     {
         pad_r += button_sz;
         collapse_button_pos = ImVec2(title_bar_rect.Max.x - pad_r - style.FramePadding.x, title_bar_rect.Min.y);
@@ -5604,7 +5610,7 @@ void ImGui::RenderWindowTitleBarContents(ImGuiWindow* window, const ImRect& titl
     if (has_collapse_button)
         if (CollapseButton(window->GetID("#COLLAPSE"), collapse_button_pos))
             window->WantCollapseToggle = true; // Defer actual collapsing to next frame as we are too far in the Begin() function
-
+            */#
     // Close button
     if (has_close_button)
         if (CloseButton(window->GetID("#CLOSE"), close_button_pos))

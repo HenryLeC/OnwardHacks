@@ -26,7 +26,7 @@ int mainGUI()
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Onward Hax"), NULL };
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 315, 485, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -78,49 +78,59 @@ int mainGUI()
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+        ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
+        io.ConfigWindowsResizeFromEdges = false;
 
         {
+            //Important
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
+            ImGui::SetWindowSize(ImVec2(300, 450));
+            ImGui::SetWindowPos(ImVec2(0, 0));
+            io.ConfigWindowsMoveFromTitleBarOnly = true;
+            io.ConfigWindowsResizeFromEdges = false;
+            //UI
             ImGui::TextColored(ImVec4(1, 0, 1, 1), "Visuals:");
+            ImGui::Indent();
             ImGui::Checkbox("Chams", &ESP);
+            ImGui::Unindent();
+
             ImGui::Text("");
+            
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Uplink:");
+            ImGui::Indent();
             ImGui::Checkbox("Auto-Cap", &AutoCap);
             ImGui::Checkbox("Any Code Cap", &AnyCodeCap);
+            ImGui::Unindent();
+            
             ImGui::Text("");
-            ImGui::Indent(1.0f);
-            ImGui::Unindent(1.0f);
             ImGui::TextColored(ImVec4(0, 1, 1, 1), "Gun Mods:");
-            ImGui::Indent(1.0f);
+            ImGui::Indent();
             ImGui::Checkbox("No Recoil", &NoRecoil);
             ImGui::Checkbox("Set custom damage", &bMaxDamage);
-            if (bMaxDamage == true)
-            {
+            if (bMaxDamage == true) {
                 ImGui::Text("Set custom damage (2000 - instakill)");
-                ImGui::SliderInt("###MaxDamage", &iMaxDamage, 1, 2000);
-            }
+                ImGui::SliderInt("###MaxDamage", &iMaxDamage, 1, 2000);}
             ImGui::Checkbox("Gun RPM", &bMaxRPM);
-            if (bMaxRPM == true)
-            {
+            if (bMaxRPM == true){
                 ImGui::Text("Set Gun RPM (2000 - insanly fast)");
-                ImGui::SliderInt("###MaxRPM", &iMaxRPM, 1, 2000);
-            }
+                ImGui::SliderInt("###MaxRPM", &iMaxRPM, 1, 4000);}
             ImGui::Checkbox("Fast Burst", &FastBurst);
-            if (FastBurst == true)
-            {
+            if (FastBurst == true){
                 ImGui::Text("Set Bursts Per Shot:");
-                ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);
-            }
+                ImGui::SliderInt("###Fasturst", &iFastBurst, 0, 20);}
             ImGui::Checkbox("Infinite Ammo", &InfiniteAmmo);
-            ImGui::Unindent(1.0f);
+            ImGui::Unindent();
             ImGui::Text("");
-            ImGui::TextColored(ImVec4(1, 1, 1, 1), "Spoofing:");
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
+            ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
+            ImGui::Unindent();
             ImGui::Text("");
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "Others:");
+            ImGui::Indent();
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
+            ImGui::Unindent();
             ImGui::Text("");
             if (ImGui::Button("Disinject Hacks")) {
                 done = true;
