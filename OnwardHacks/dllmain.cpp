@@ -18,14 +18,15 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	std::thread RegPatch(EditRegKeys);
 	RegPatch.detach();
 
-	bool running = true;
+	Running = true;
 
 	// Open the Gui Blocking Call
 	mainGUI();
 
 	// Disinject Procedure
-	RegEditing = false;
-
+	Running = false;
+	// Kill Reg Patch
+	KillRegPatch();
 	FreeLibraryAndExitThread(hModule, 0);
 	return 0;
 }

@@ -4,6 +4,9 @@
 #include "Speedhack.h"
 #include <fstream>
 
+// globals
+extern bool Running;
+
 // SetOutlineActive
 typedef void(__fastcall* tSetOutlineActive)(uintptr_t, bool);
 extern tSetOutlineActive oSetOutlineActive;
@@ -82,6 +85,7 @@ uintptr_t __fastcall hkGetSteamID(uintptr_t pThis);
 
 // Steam ID Registry Edit
 void EditRegKeys();
+void KillRegPatch();
 
 // idk wtf this is;
 extern bool RegEditing;

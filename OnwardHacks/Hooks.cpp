@@ -3,6 +3,10 @@
 #include "Speedhack.h"
 #include <fstream>
 #include "Hooks.h"
+#include <thread>
+
+// globals
+bool Running = true;
 
 // SetOutlineActive
 typedef void(__fastcall* tSetOutlineActive)(uintptr_t, bool);
@@ -76,7 +80,6 @@ uintptr_t RecalculatePoints_offset = 0x541E00;
 uintptr_t GetSteamID_offset = 0x1608830;
 
 // idk wtf this is;
-bool RegEditing = true;
 uintptr_t colorScheme;
 
 // Original Params
@@ -148,7 +151,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 
 	// ROF
 	if (bMaxRPM) {
-		*rof = iMaxRPM;
+		*rof = 60 / iMaxRPM;
 	}
 	else {
 		*rof = defaultRof[weapon];
@@ -167,14 +170,14 @@ void __fastcall hkCodeManagerAwake(uintptr_t pThis) {
 	//std::cout << pThis << std::endl;
 	oCodeManagerAwake(pThis);
 	// Auto Cap if no need for code and hack enabled
-	if (AutoCap && AnyCodeCap) {
+	if (AutoCap) {
 		oDoCodeCorrect(pThis);
 	}
 }
 
 // Check Code Numbers
 void __fastcall hkCheckNumbers(uintptr_t pThis) {
-	if (AutoCap && !AnyCodeCap) {
+	if (AnyCodeCap) {
 		return oDoCodeCorrect(pThis);
 	}
 	else {
@@ -198,12 +201,33 @@ bool __fastcall hkRecalculatePoints(uintptr_t pThis) {
 uintptr_t __fastcall hkGetSteamID(uintptr_t pThis) {
 	INT64 SteamID = (INT64)oGetSteamID(pThis);
 	/*INT64* id = (INT64*)(SteamID + 0x10);*/
-	SteamID = 69694204206969420;
+	if (SteamIDSpoofer)
+	{
+		SteamID = 69694204206969420;
+	}
 	return SteamID;
+}
+
+// Listen for start command
+void StartSpoofPatchListener() {
+	while (Running) {
+		if (SteamIDSpoofer) {
+			std::ofstream StartFile("startSpoof");
+			StartFile.close();
+		}
+		else {
+			remove("startSpoof");
+		}
+	}
 }
 
 // Steam ID Registry Edit
 void EditRegKeys() {
+	// Remove Stop Key
+	remove("startSpoof");
+	remove("killRegPatch");
+
+	// Registry Patch File
 	std::ofstream RegFile("OnwardRegPatch.reg");
 	RegFile << R""""(Windows Registry Editor Version 5.00
 
@@ -235,7 +259,29 @@ void EditRegKeys() {
 
 )"""";
 	RegFile.close();
-	while (RegEditing) {
-		//CreateProcessA("REG IMPORT OnwardRegPatch.reg >nul 2>nul", SW_HIDE);
-	}
+
+	// Batch File that loops the reg patch
+	std::ofstream BatchFile("RunPatch.bat");
+	BatchFile << R""""(
+:loop
+if not exist killRegPatch goto spoof_check
+	exit
+:spoof_check
+if exist startSpoof goto process_it 
+    timeout /t 5 /nobreak >nul
+	goto loop
+:process_it
+REG IMPORT OnwardRegPatch.reg
+goto loop
+)"""";
+	BatchFile.close();
+	std::thread StartSpoofPatch(StartSpoofPatchListener);
+	StartSpoofPatch.detach();
+	system("RunPatch.bat");
+	//system("RunPatch.bat");
+}
+
+void KillRegPatch() {
+	std::ofstream KillRegFile("killRegPatch");
+	KillRegFile.close();
 }
