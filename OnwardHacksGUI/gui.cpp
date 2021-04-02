@@ -26,7 +26,7 @@ int mainGUI()
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Onward Hax"), NULL };
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 315, 485, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 315, 500, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -85,7 +85,7 @@ int mainGUI()
             //Important
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
-            ImGui::SetWindowSize(ImVec2(300, 450));
+            ImGui::SetWindowSize(ImVec2(300, 465));
             ImGui::SetWindowPos(ImVec2(0, 0));
             io.ConfigWindowsMoveFromTitleBarOnly = true;
             io.ConfigWindowsResizeFromEdges = false;
