@@ -43,6 +43,7 @@ uintptr_t DoCodeCorrect_offset = 0x12BC4A0;
 
 // WarPlayerAwake
 tWarPlayerAwake oWarPlayerAwake;
+uintptr_t WarPlayerAwake_offset = 0x12A0D40;
 
 // Get Player Faction
 tGetPlayerFaction oGetPlayerFaction;
@@ -63,6 +64,10 @@ uintptr_t RecalculatePoints_offset = 0x541E00;
 tGetSteamID oGetSteamID;
 uintptr_t GetSteamID_offset = 0x1608830;
 
+// GetName
+tGetName oGetName;
+uintptr_t GetName_offset = 0x1608800;
+
 // IsPasswordValid
 tisDeveloper oisDeveloper;
 uintptr_t isDeveloper_offset = 0x12EAD60;
@@ -70,6 +75,22 @@ uintptr_t isDeveloper_offset = 0x12EAD60;
 // GetPenetrationInfo
 tGetPenetrationInfo oGetPenetrationInfo;
 uintptr_t GetPenetrationInfo_offset = 0x51FFE0;
+
+// CheckIfAllowedOnTeam
+tCheckIfAllowedOnTeam oCheckIfAllowedOnTeam;
+uintptr_t CheckIfAllowedOnTeam_offset = 0x12916F0;
+
+// IsQaBuild
+tIsQaBuild oIsQaBuild;
+uintptr_t IsQaBuild_offset = 0x12E8350;
+
+// SetNameText
+tSetNameText oSetNameText;
+uintptr_t SetNameText_offset = 0x12AA500;
+
+// UpdateMe
+tUpdateMe oUpdateMe;
+uintptr_t UpdateMe_offset = 0x12ACE30;
 
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
@@ -90,11 +111,12 @@ void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
 			return oSetOutlineActive(pThis, active);
 		}
 		// Downed
-		else if (playerState == 1) {
+		/*else if (playerState == 1) {
 			uintptr_t color = *(uintptr_t*)(colorScheme + 0x48);
-			*(float*)(color + 0x4) = 255;
+			float* g = (float*)(color + 0x4);
+			*g = 1.0f;
 			oSetOutlineColor(pThis, color);
-		}
+		}*/
 		return oSetOutlineActive(pThis, true);
 	}
 	else {
@@ -204,6 +226,15 @@ uintptr_t __fastcall hkGetSteamID(uintptr_t pThis) {
 	return SteamID;
 }
 
+// GetName
+char* __fastcall hkGetName(uintptr_t pThis) {
+	char* Name = oGetName(pThis);
+	if (SpoofedName != "") {
+		Name = SpoofedName;
+	}
+	return Name;
+}
+
 // Listen for start command
 void StartSpoofPatchListener() {
 	while (Running) {
@@ -298,4 +329,27 @@ uintptr_t __fastcall hkGetPenetrationInfo(uintptr_t pThis, uintptr_t physMat) {
 		std::cout << std::hex << penInfo << std::dec << std::endl;
 	}
 	return penInfo;
+}
+
+// CheckIfAllowedOnTeam
+bool __fastcall hkCheckIfAllowedOnTeam(uintptr_t pThis, INT32 teamIndex, uintptr_t who) {
+	return true;
+}
+
+// IsQa Build
+bool __fastcall hkIsQaBuild(uintptr_t pThis) {
+	oIsQaBuild(pThis);
+	return true;
+}
+
+// War Player Awake
+void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
+	oWarPlayerAwake(pThis);
+
+	uintptr_t photonPlayer = *(uintptr_t*)(pThis + 0x198);
+	oSetNameText(pThis, "nan");
+	// Photon Player = 0 in offline
+	if (photonPlayer != 0) {
+		oUpdateMe(pThis, photonPlayer);
+	}
 }

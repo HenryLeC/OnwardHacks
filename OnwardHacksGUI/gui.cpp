@@ -77,19 +77,17 @@ int mainGUI()
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
         ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.00f);
         {
             //Important
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
-            ImGui::SetWindowSize(ImVec2(100, 100));
+            ImGui::SetWindowSize(ImVec2(300, 500));
             ImGui::SetWindowPos(ImVec2(0, 0));
             io.ConfigWindowsMoveFromTitleBarOnly = true;
             io.ConfigWindowsResizeFromEdges = false;
  
             //UI
-            ImGui::ShowDemoWindow;
             ImGui::TextColored(ImVec4(1, 0, 1, 1), "Visuals:");
             ImGui::Indent();
             ImGui::Checkbox("Chams", &ESP);
@@ -127,10 +125,8 @@ int mainGUI()
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
-            static char SpoofedName[128] = "";
-            ImGui::InputText("input name", SpoofedName, IM_ARRAYSIZE(SpoofedName));
-
-
+            //ImGui::Text("Enter Spoofed Name: %s", SpoofedName);
+            //ImGui::InputText("###Spoof", SpoofedName, IM_ARRAYSIZE(SpoofedName));
 
             ImGui::Unindent();
 
@@ -139,16 +135,17 @@ int mainGUI()
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "Others:");
             ImGui::Indent();
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
-            ImGui::Checkbox("Unlock All Pens", &InfinitePoints);
-            ImGui::Checkbox("Speed Hack", &FastBurst);
+            ImGui::Checkbox("Unlock All Pens", &DevMode);
+            ImGui::Checkbox("Bypass Full Lobbies", &DevMode);
             ImGui::Unindent();
 
             ImGui::Text("");
 
             if (ImGui::Button("Disinject Hacks")) {
-                Beep(800, 1000);
+                //Beep(800, 1000);
                 done = true;
             }
+            ImGui::End();
         }
 
         // Rendering

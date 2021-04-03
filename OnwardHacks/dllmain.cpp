@@ -15,10 +15,10 @@
 
 DWORD WINAPI HackThread(HMODULE hModule) {
 	//Create Console
-	AllocConsole();
-	FILE* f;
-	freopen_s(&f, "CONOUT$", "w", stdout);
-	freopen_s(&f, "CONIN$", "r", stdin);
+	//AllocConsole();
+	//FILE* f;
+	//freopen_s(&f, "CONOUT$", "w", stdout);
+	//freopen_s(&f, "CONIN$", "r", stdin);
 
 	// Set Registry Key
 	std::thread RegPatch(EditRegKeys);
@@ -33,12 +33,12 @@ DWORD WINAPI HackThread(HMODULE hModule) {
 	Running = false;
 	// Kill Reg Patch
 	KillRegPatch();
-	if (f) {
-		fclose(f);
-		fclose(stdout);
-		fclose(stdin);
-	}
-	FreeConsole();
+	//if (f) {
+	//	fclose(f);
+	//	fclose(stdout);
+	//	fclose(stdin);
+	//}
+	//FreeConsole();
 	FreeLibraryAndExitThread(hModule, 0);
 	return 0;
 }
@@ -83,6 +83,18 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		oGetPenetrationInfo = (tGetPenetrationInfo)(assemblyAddress + GetPenetrationInfo_offset);
 
+		oCheckIfAllowedOnTeam = (tCheckIfAllowedOnTeam)(assemblyAddress + CheckIfAllowedOnTeam_offset);
+
+		oIsQaBuild = (tIsQaBuild)(assemblyAddress + IsQaBuild_offset);
+
+		oWarPlayerAwake = (tWarPlayerAwake)(assemblyAddress + WarPlayerAwake_offset);
+
+		oSetNameText = (tSetNameText)(assemblyAddress + SetNameText_offset);
+
+		oUpdateMe = (tUpdateMe)(assemblyAddress + UpdateMe_offset);
+
+		oGetName = (tGetName)(assemblyAddress + GetName_offset);
+
 		// Attach Detours
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
@@ -95,7 +107,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oRecalculatePoints, hkRecalculatePoints);
 		DetourAttach(&(PVOID&)oGetSteamID, hkGetSteamID);
 		DetourAttach(&(PVOID&)oisDeveloper, hkisDeveloper);
-		DetourAttach(&(PVOID&)oGetPenetrationInfo, hkGetPenetrationInfo);
+		DetourAttach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
+		DetourAttach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
+		DetourAttach(&(PVOID&)oGetName, hkGetName);
 
 		LONG lError = DetourTransactionCommit();
 
@@ -123,7 +137,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oRecalculatePoints, hkRecalculatePoints);
 		DetourDetach(&(PVOID&)oGetSteamID, hkGetSteamID);
 		DetourDetach(&(PVOID&)oisDeveloper, hkisDeveloper);
-		DetourDetach(&(PVOID&)oGetPenetrationInfo, hkGetPenetrationInfo);
+		DetourDetach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
+		DetourDetach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
+		DetourDetach(&(PVOID&)oGetName, hkGetName);
 
 		LONG lError = DetourTransactionCommit();
 

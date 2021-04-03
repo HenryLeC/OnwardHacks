@@ -53,6 +53,19 @@ extern uintptr_t GetFactionColors_offset;
 // WarPlayerAwake
 typedef void(__fastcall* tWarPlayerAwake)(uintptr_t);
 extern tWarPlayerAwake oWarPlayerAwake;
+extern uintptr_t WarPlayerAwake_offset;
+
+void __fastcall hkWarPlayerAwake(uintptr_t);
+
+// WarPlayer SetNameString
+typedef void(__fastcall* tSetNameText)(uintptr_t, const char*);
+extern tSetNameText oSetNameText;
+extern uintptr_t SetNameText_offset;
+
+// WarPlayewr UpdateMe
+typedef void(__fastcall* tUpdateMe)(uintptr_t, uintptr_t);
+extern tUpdateMe oUpdateMe;
+extern uintptr_t UpdateMe_offset;
 
 // Get Player Faction
 typedef int(__fastcall* tGetPlayerFaction)(uintptr_t);
@@ -83,6 +96,13 @@ extern uintptr_t GetSteamID_offset;
 
 uintptr_t __fastcall hkGetSteamID(uintptr_t pThis);
 
+// GetName
+typedef char*(__fastcall* tGetName)(uintptr_t);
+extern tGetName oGetName;
+extern uintptr_t GetName_offset;
+
+char* __fastcall hkGetName(uintptr_t pThis);
+
 // isDeveloper
 typedef bool(__fastcall* tisDeveloper)(uintptr_t);
 extern tisDeveloper oisDeveloper;
@@ -96,6 +116,21 @@ extern tGetPenetrationInfo oGetPenetrationInfo;
 extern uintptr_t GetPenetrationInfo_offset;
 
 uintptr_t __fastcall hkGetPenetrationInfo(uintptr_t pThis, uintptr_t physMat);
+
+// CheckIfAllowedOnTeam
+typedef bool(__fastcall* tCheckIfAllowedOnTeam)(uintptr_t, INT32, uintptr_t);
+extern tCheckIfAllowedOnTeam oCheckIfAllowedOnTeam;
+extern uintptr_t CheckIfAllowedOnTeam_offset;
+
+bool __fastcall hkCheckIfAllowedOnTeam(uintptr_t pThis, INT32 teamIndex, uintptr_t who);
+
+// Is QA Build?
+typedef bool(__fastcall* tIsQaBuild)(uintptr_t);
+extern tIsQaBuild oIsQaBuild;
+extern uintptr_t IsQaBuild_offset;
+
+bool __fastcall hkIsQaBuild(uintptr_t pThis);
+
 
 // Steam ID Registry Edit
 void EditRegKeys();

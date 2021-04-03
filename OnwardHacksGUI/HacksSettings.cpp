@@ -14,3 +14,5 @@ int iMaxRPM = 1;
 bool InfiniteAmmo = false;
 bool SteamIDSpoofer = false;
 bool InfinitePoints = false;
+bool DevMode = false;
+char SpoofedName[128] = "";
