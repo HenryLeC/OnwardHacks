@@ -16,4 +16,5 @@ bool SteamIDSpoofer = false;
 bool InfinitePoints = false;
 char SpoofedName[128] = "";
 bool DevMode = false;
-float SpeedHack = 1.0f;
+bool SpeedHack = false;
+float fSpeedHack = 1.0f;

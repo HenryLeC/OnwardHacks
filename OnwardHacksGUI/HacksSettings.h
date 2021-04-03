@@ -15,4 +15,5 @@ extern bool SteamIDSpoofer;
 extern bool InfinitePoints;
 extern char SpoofedName[128];
 extern bool DevMode;
-extern float SpeedHack;
+extern bool SpeedHack;
+extern float fSpeedHack;

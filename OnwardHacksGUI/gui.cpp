@@ -137,8 +137,9 @@ int mainGUI()
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
             ImGui::Checkbox("Unlock All Pens", &DevMode);
             ImGui::Checkbox("Bypass Full Lobbies", &DevMode);
-            ImGui::Checkbox("Speed Hack", &FastBurst);
-            ImGui::SliderFloat("###SpeedHack", &SpeedHack, 1.0f, 3.0f, "Speed = %.2f");
+            ImGui::Checkbox("Speed Hack Multiplier", &SpeedHack);
+            if (SpeedHack == true) {
+                ImGui::SliderFloat("###SpeedHack", &fSpeedHack, 1.0f, 3.0f, "Speed = %.2f");}
             ImGui::Unindent();
 
             ImGui::Text("");
