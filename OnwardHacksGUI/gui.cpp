@@ -88,21 +88,22 @@ int mainGUI()
             io.ConfigWindowsResizeFromEdges = false;
  
             //UI
+            //Visuals
             ImGui::TextColored(ImVec4(1, 0, 1, 1), "Visuals:");
             ImGui::Indent();
             ImGui::Checkbox("Chams", &ESP);
             ImGui::Unindent();
-
             ImGui::Text("");
-            
+
+            //Uplink
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "Uplink:");
             ImGui::Indent();
             ImGui::Checkbox("Auto-Cap", &AutoCap);
             ImGui::Checkbox("Any Code Cap", &AnyCodeCap);
             ImGui::Unindent();
-            
             ImGui::Text("");
 
+            //Gun Mods
             ImGui::TextColored(ImVec4(0, 1, 1, 1), "Gun Mods:");
             ImGui::Indent();
             ImGui::Checkbox("No Recoil", &NoRecoil);
@@ -122,16 +123,16 @@ int mainGUI()
             ImGui::Unindent();
             ImGui::Text("");
 
+            //Spoofing
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
             //ImGui::Text("Enter Spoofed Name: %s", SpoofedName);
             //ImGui::InputText("###Spoof", SpoofedName, IM_ARRAYSIZE(SpoofedName));
-
             ImGui::Unindent();
-
             ImGui::Text("");
 
+            //Others
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "Others:");
             ImGui::Indent();
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
@@ -140,7 +141,6 @@ int mainGUI()
             ImGui::Checkbox("Speed Hack", &FastBurst);
             ImGui::SliderFloat("###SpeedHack", &SpeedHack, 1.0f, 3.0f, "Speed = %.2f");
             ImGui::Unindent();
-
             ImGui::Text("");
 
             if (ImGui::Button("Disinject Hacks")) {
