@@ -13,5 +13,6 @@ extern int iMaxRPM;
 extern bool InfiniteAmmo;
 extern bool SteamIDSpoofer;
 extern bool InfinitePoints;
-extern bool DevMode;
 extern char SpoofedName[128];
+extern bool DevMode;
+extern float SpeedHack;
