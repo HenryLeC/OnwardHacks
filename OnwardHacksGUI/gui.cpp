@@ -6,6 +6,7 @@
 #include <tchar.h>
 #include <unordered_map>
 #include "HacksSettings.h"
+#include <string>
 #pragma comment(lib, "d3d9.lib")
 
 // Data
@@ -72,24 +73,23 @@ int mainGUI()
         {
             break;
         }
-
         // Start the Dear ImGui frame
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-
-        ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-        io.ConfigWindowsResizeFromEdges = false;
-
+        ImGui::ShowDemoWindow();
+        ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.00f);
         {
             //Important
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
-            ImGui::SetWindowSize(ImVec2(300, 465));
+            ImGui::SetWindowSize(ImVec2(100, 100));
             ImGui::SetWindowPos(ImVec2(0, 0));
             io.ConfigWindowsMoveFromTitleBarOnly = true;
             io.ConfigWindowsResizeFromEdges = false;
+ 
             //UI
+            ImGui::ShowDemoWindow;
             ImGui::TextColored(ImVec4(1, 0, 1, 1), "Visuals:");
             ImGui::Indent();
             ImGui::Checkbox("Chams", &ESP);
@@ -104,6 +104,7 @@ int mainGUI()
             ImGui::Unindent();
             
             ImGui::Text("");
+
             ImGui::TextColored(ImVec4(0, 1, 1, 1), "Gun Mods:");
             ImGui::Indent();
             ImGui::Checkbox("No Recoil", &NoRecoil);
@@ -122,20 +123,32 @@ int mainGUI()
             ImGui::Checkbox("Infinite Ammo", &InfiniteAmmo);
             ImGui::Unindent();
             ImGui::Text("");
+
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
+            static char SpoofedName[128] = "";
+            ImGui::InputText("input name", SpoofedName, IM_ARRAYSIZE(SpoofedName));
+
+
+
             ImGui::Unindent();
+
             ImGui::Text("");
+
             ImGui::TextColored(ImVec4(0, 1, 0, 1), "Others:");
             ImGui::Indent();
             ImGui::Checkbox("Infinite Points", &InfinitePoints);
+            ImGui::Checkbox("Unlock All Pens", &InfinitePoints);
+            ImGui::Checkbox("Speed Hack", &FastBurst);
             ImGui::Unindent();
+
             ImGui::Text("");
+
             if (ImGui::Button("Disinject Hacks")) {
+                Beep(800, 1000);
                 done = true;
             }
-            ImGui::End();
         }
 
         // Rendering
