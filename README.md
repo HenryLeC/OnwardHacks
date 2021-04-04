@@ -2,23 +2,28 @@
 
 ## Features
 * ESP ✔
-* No Recoil ✔
-* Infinite Ammo ✔
-* 6 Round Burst ✔
 * Auto-Cap ✔
 * Any Code Cap ✔
+* No Recoil ✔
 * Maxed Damage ✔
 * Max Rate Of Fire ✔
-* Disinject Hacks ✔
+* 6 Round Burst ✔
+* Infinite Ammo ✔
+* Steam ID Spoofer
+* Steam Name Spoofer
 * Infinite Points ✔
+* All Marker Colors ✔
+* Full Lobby Bypass ✔
+* Speedhack ✔
 
 ## Instructions for use
-1. Run OnwardHacksInjector.exe while Onward is running
+1. Run OnwardHacksInjector.exe
 2. Click 1 to register or 2 to log in
-3. Click enter when promppte to inject
+3. Click enter when prompted to inject (after onward is opened)
 4. Close original window
-5. Click on the onward terminal that opened up
-6. Type the number cooresponding to the option you would like and press enter
+5. Click on the neew UI that opened up
+6. Click the options you want to enable
+7. Move the sliders for the settings you want to change
 
 ## Build Instruction
 ### One Time Setup
@@ -30,8 +35,3 @@
 5. Select config for version you bould like
 6. Select x64 platform
 7. Select Build -> Build Solution
-
-## TODO
-Computer\HKEY_CURRENT_USER\SOFTWARE\Downpour Interactive\Onward\LastSteamWebAPIRequest_h1952494584
-
-Need to delete with spoofed steam id
