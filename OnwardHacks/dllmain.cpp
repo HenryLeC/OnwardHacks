@@ -108,7 +108,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oGetSteamID, hkGetSteamID);
 		DetourAttach(&(PVOID&)oisDeveloper, hkisDeveloper);
 		DetourAttach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
-		DetourAttach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
+		//DetourAttach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
 		DetourAttach(&(PVOID&)oGetName, hkGetName);
 
 		LONG lError = DetourTransactionCommit();
@@ -138,7 +138,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oGetSteamID, hkGetSteamID);
 		DetourDetach(&(PVOID&)oisDeveloper, hkisDeveloper);
 		DetourDetach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
-		DetourDetach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
+		//DetourDetach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
 		DetourDetach(&(PVOID&)oGetName, hkGetName);
 
 		LONG lError = DetourTransactionCommit();
