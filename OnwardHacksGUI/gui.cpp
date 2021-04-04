@@ -54,7 +54,7 @@ float GetValue(std::string category, std::string key, float def) {
     return def;
 }
 
-char* GetValue(std::string category, std::string key, char* def) {
+const char* GetCharValue(std::string category, std::string key, std::string def) {
     if (checkIfExists(category, key)) {
         std::string sValue = ini[category][key];
         char* ret = new char[sValue.length() + 1];
@@ -62,7 +62,7 @@ char* GetValue(std::string category, std::string key, char* def) {
         return ret;
     }
 
-    return def;
+    return def.c_str();
 }
 
 bool GetValue(std::string category, std::string key, bool def = false) {
@@ -108,6 +108,9 @@ void loadConfig() {
 
     // Spoofing
     SteamIDSpoofer = GetValue("Spoofing", "SteamID");
+    SpoofName = GetValue("Spoofing", "bSpoofName");
+    std::string SpoofName = GetCharValue("Spoofing", "SpoofName", "");
+    strcpy_s(sSpoofName, SpoofName.length() + 1, SpoofName.c_str());
 
     // Others
     InfinitePoints = GetValue("Others", "InfinitePoints");
@@ -138,6 +141,8 @@ void saveConfig() {
 
     // Spoofing
     ini["Spoofing"]["SteamID"] = iniConvert(SteamIDSpoofer);
+    ini["Spoofing"]["bSpoofName"] = iniConvert(SpoofName);
+    ini["Spoofing"]["sSpoofName"] = sSpoofName;
 
     // Others
     ini["Others"]["InfinitePoints"] = iniConvert(InfinitePoints);
