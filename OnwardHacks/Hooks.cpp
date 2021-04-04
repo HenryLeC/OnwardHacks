@@ -211,7 +211,9 @@ uintptr_t __fastcall hkGetFactionColors(uintptr_t pThis, uintptr_t Faction) {
 
 // Recalcuate Points
 bool __fastcall hkRecalculatePoints(uintptr_t pThis) {
-	oRecalculatePoints(pThis);
+	bool ret = oRecalculatePoints(pThis);
+	if (InfinitePoints)
+		ret = true;
 	return true;
 }
 
@@ -229,8 +231,8 @@ uintptr_t __fastcall hkGetSteamID(uintptr_t pThis) {
 // GetName
 char* __fastcall hkGetName(uintptr_t pThis) {
 	char* Name = oGetName(pThis);
-	if (SpoofedName != "") {
-		Name = SpoofedName;
+	if (SpoofName) {
+		Name = sSpoofName;
 	}
 	return Name;
 }
@@ -315,9 +317,10 @@ void KillRegPatch() {
 
 // isDeveloper
 bool __fastcall hkisDeveloper(uintptr_t pThis) {
-	std::cout << std::hex << pThis << std::dec << std::endl;
-	oisDeveloper(pThis);
-	return true;
+	bool ret =  oisDeveloper(pThis);
+	if (DevMode)
+		ret = true;
+	return ret;
 }
 
 // GetPenetrationInfo
