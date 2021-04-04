@@ -52,7 +52,6 @@ extern "C" __declspec(dllexport) int Inject(const char* processName, const char*
     catch (const std::runtime_error& e) // To catch any exceptions
     {
         std::cerr << e.what() << '\n';
-        system("pause");
         return 1;
     }
 

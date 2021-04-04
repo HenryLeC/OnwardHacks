@@ -1,6 +1,7 @@
 #include "Speedhack.h"
 #include "pch.h"
 #include "Detours/detours.h"
+#include "../OnwardHacksGUI/HacksSettings.h"
 
 namespace Speedhack
 {
@@ -22,23 +23,33 @@ namespace Speedhack
 	_tQueryPerformanceCounter _oQueryPerformanceCounter;
 	LARGE_INTEGER _QPC_BaseTime = LARGE_INTEGER();
 
+	float GetSpeedMultiplier() {
+		if (SpeedHack) {
+			return fSpeedHack;
+		}
+		else {
+			return 1.0f;
+		}
+	}
+
 	DWORD WINAPI _hkGetTickCount()
 	{
-		return _GTC_BaseTime + ((_oGetTickCount() - _GTC_BaseTime) * speed);
+		return _GTC_BaseTime + ((_oGetTickCount() - _GTC_BaseTime) * GetSpeedMultiplier());
 	}
 
 	DWORD WINAPI _hkGetTickCount64()
 	{
-		return _GTC64_BaseTime + ((_oGetTickCount64() - _GTC64_BaseTime) * speed);
+		return _GTC64_BaseTime + ((_oGetTickCount64() - _GTC64_BaseTime) * GetSpeedMultiplier());
 	}
 
 	DWORD WINAPI _hkQueryPerformanceCounter(LARGE_INTEGER* lpPerformanceCount)
 	{
 		LARGE_INTEGER x;
 		_oQueryPerformanceCounter(&x);
-		lpPerformanceCount->QuadPart = _QPC_BaseTime.QuadPart + ((x.QuadPart - _QPC_BaseTime.QuadPart) * speed);
+		lpPerformanceCount->QuadPart = _QPC_BaseTime.QuadPart + ((x.QuadPart - _QPC_BaseTime.QuadPart) * (double)GetSpeedMultiplier());
 		return TRUE;
 	}
+
 
 	void Setup()
 	{
