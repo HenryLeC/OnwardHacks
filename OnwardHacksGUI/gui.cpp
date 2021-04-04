@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "HacksSettings.h"
 #include <string>
+#include "ini.h"
 #pragma comment(lib, "d3d9.lib")
 
 // Data
@@ -14,20 +15,147 @@ static LPDIRECT3D9              g_pD3D = NULL;
 static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
 static D3DPRESENT_PARAMETERS    g_d3dpp = {};
 
+mINI::INIFile file("hacksConfig.ini");
+mINI::INIStructure ini;
+
+
 // Forward declarations of helper functions
 bool CreateDeviceD3D(HWND hWnd);
 void CleanupDeviceD3D();
 void ResetDevice();
 LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-// Main code
+// Load Saved Config
+
+bool checkIfExists(std::string category, std::string key) {
+    if (ini.has(category)) {
+        if (ini[category].has(key)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int GetValue(std::string category, std::string key, int def) {
+    if (checkIfExists(category, key)) {
+        std::string sValue = ini[category][key];
+        return stoi(sValue);
+    }
+
+    return def;
+}
+
+float GetValue(std::string category, std::string key, float def) {
+    if (checkIfExists(category, key)) {
+        std::string sValue = ini[category][key];
+        return stof(sValue);
+    }
+
+    return def;
+}
+
+char* GetValue(std::string category, std::string key, char* def) {
+    if (checkIfExists(category, key)) {
+        std::string sValue = ini[category][key];
+        char* ret = new char[sValue.length() + 1];
+        strcpy_s(ret, sValue.length() + 1, sValue.c_str());
+        return ret;
+    }
+
+    return def;
+}
+
+bool GetValue(std::string category, std::string key, bool def = false) {
+    if (checkIfExists(category, key)) {
+        std::string sValue = ini[category][key];
+        return sValue == "true" ? true : false;
+    }
+
+    return def;
+}
+
+std::string iniConvert(bool value) {
+    return value ? "true" : "false";
+}
+
+std::string iniConvert(float value) {
+    return std::to_string(value);
+}
+
+std::string iniConvert(int value) {
+    return std::to_string(value);
+}
+
+void loadConfig() {
+    file.read(ini);
+
+    // Visuals
+    ESP = GetValue("Visuals", "ESP");
+
+    // Uplink
+    AutoCap = GetValue("Uplink", "AutoCap");
+    AnyCodeCap = GetValue("Uplink", "AnyCode");
+
+    // Gun Hacks
+    NoRecoil = GetValue("Gun Hacks", "NoRecoil");
+    bMaxDamage = GetValue("Gun Hacks", "bMaxDamage");
+    iMaxDamage = GetValue("Gun Hacks", "iMaxDamage", 0);
+    bMaxRPM = GetValue("Gun Hacks", "bMaxRPM");
+    iMaxRPM = GetValue("Gun Hacks", "iMaxRPM", 0);
+    FastBurst = GetValue("Gun Hacks", "FastBurst");
+    iFastBurst = GetValue("Gun Hacks", "iFastBurst", 0);
+    InfiniteAmmo = GetValue("Gun Hacks", "InfiniteAmmo");
+
+    // Spoofing
+    SteamIDSpoofer = GetValue("Spoofing", "SteamID");
+
+    // Others
+    InfinitePoints = GetValue("Others", "InfinitePoints");
+    DevMode = GetValue("Others", "DevMode");
+    SpeedHack = GetValue("Others", "SpeedHack");
+    fSpeedHack = GetValue("Others", "fSpeedHack", 1.0f);
+}
+
+void saveConfig() {
+    file.read(ini);
+
+    // Visuals
+    ini["Visuals"]["ESP"] = iniConvert(ESP);
+
+    // Uplink
+    ini["Uplink"]["AutoCap"] = iniConvert(AutoCap);
+    ini["Uplink"]["AnyCode"] = iniConvert(AnyCodeCap);
+
+    // Gun Hacks
+    ini["Gun Hacks"]["NoRecoil"] = iniConvert(NoRecoil);
+    ini["Gun Hacks"]["bMaxDamage"] = iniConvert(bMaxDamage);
+    ini["Gun Hacks"]["iMaxDamage"] = iniConvert(iMaxDamage);
+    ini["Gun Hacks"]["bMaxRPM"] = iniConvert(bMaxRPM);
+    ini["Gun Hacks"]["iMaxRPM"] = iniConvert(iMaxRPM);
+    ini["Gun Hacks"]["FastBurst"] = iniConvert(FastBurst);
+    ini["Gun Hacks"]["iFastBurst"] = iniConvert(iFastBurst);
+    ini["Gun Hacks"]["InfiniteAmmo"] = iniConvert(InfiniteAmmo);
+
+    // Spoofing
+    ini["Spoofing"]["SteamID"] = iniConvert(SteamIDSpoofer);
+
+    // Others
+    ini["Others"]["InfinitePoints"] = iniConvert(InfinitePoints);
+    ini["Others"]["DevMode"] = iniConvert(DevMode);
+    ini["Others"]["SpeedHack"] = iniConvert(SpeedHack);
+    ini["Others"]["fSpeedHack"] = iniConvert(fSpeedHack);
+
+    file.write(ini, true);
+}
+
+// Main) code
 int mainGUI()
 {
     // Create application window
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(NULL), NULL, NULL, NULL, NULL, _T("Onward Hax"), NULL };
     ::RegisterClassEx(&wc);
-    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 315, 500, NULL, NULL, wc.hInstance, NULL);
+    HWND hwnd = ::CreateWindow(wc.lpszClassName, _T("Onward Hax"), WS_OVERLAPPEDWINDOW, 100, 100, 315, 535, NULL, NULL, wc.hInstance, NULL);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -56,6 +184,8 @@ int mainGUI()
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX9_Init(g_pd3dDevice);
 
+    loadConfig();
+
     // Main loop
     bool done = false;
     while (!done)
@@ -66,8 +196,11 @@ int mainGUI()
         {
             ::TranslateMessage(&msg);
             ::DispatchMessage(&msg);
-            if (msg.message == WM_QUIT)
+            if (msg.message == WM_QUIT) {
                 done = true;
+                saveConfig();
+            }
+                
         }
         if (done)
         {
@@ -147,6 +280,7 @@ int mainGUI()
             if (ImGui::Button("Disinject Hacks")) {
                 //Beep(800, 1000);
                 done = true;
+                saveConfig();
             }
             ImGui::End();
         }

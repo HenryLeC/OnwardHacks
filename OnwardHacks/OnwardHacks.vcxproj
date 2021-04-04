@@ -173,6 +173,7 @@
     <ClInclude Include="..\OnwardHacksGUI\imgui\imstb_rectpack.h" />
     <ClInclude Include="..\OnwardHacksGUI\imgui\imstb_textedit.h" />
     <ClInclude Include="..\OnwardHacksGUI\imgui\imstb_truetype.h" />
+    <ClInclude Include="..\OnwardHacksGUI\ini.h" />
     <ClInclude Include="Detours\detours.h" />
     <ClInclude Include="Detours\detver.h" />
     <ClInclude Include="Detours\syelog.h" />
