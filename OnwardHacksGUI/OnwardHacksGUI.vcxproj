@@ -289,6 +289,9 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="ini.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

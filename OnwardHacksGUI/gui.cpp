@@ -261,11 +261,31 @@ int mainGUI()
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
             ImGui::Checkbox("Spoof Name", &SpoofName);
+            bool WantedColor;
+            static ImVec4 color = ImVec4(255, 255, 255, 100);
+            static char hex[128];
+            static char sSpoofedNameColored[128];
+            std::string hexStr(hex);
+            int r, g, b;
             if (SpoofName == true) {
-            static int item_current_2 = 0;
-            ImGui::Combo("lololol", &item_current_2, "red\0blue\0green\0yellow\0purple\0\0");
-            ImGui::Text("Enter Spoofed Name: %s", sSpoofName);
-            ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));}
+                ImGui::Checkbox("Would you like a coloured name?", &WantedColor);
+                if (WantedColor == true) {
+                    ImGuiColorEditFlags misc_flags = ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel;
+                    ImGui::ColorPicker3("###picker", (float*)&color, misc_flags);
+                    ImGui::InputText("###hex", hex, IM_ARRAYSIZE(hex));
+                    std::string sNameColored = "<" + hexStr + ">" + sSpoofName + "</color>";
+                    strcpy_s(sSpoofedNameColored, sNameColored.length() + 1, sNameColored.c_str());
+                }
+                ImGui::Text("Enter Spoofed Name:");
+                if (WantedColor == true)
+                {
+                    sscanf_s(hex, "%02x%02x%02x", &r, &g, &b);
+                    ImGui::TextColored(ImVec4(r,g,b,255), sSpoofName);
+                }
+                else
+                    ImGui::Text(sSpoofName);
+                ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));
+            }
             ImGui::Unindent();
             ImGui::Text("");
 
@@ -319,7 +339,6 @@ int mainGUI()
 
     return 0;
 }
-
 // Helper functions
 
 bool CreateDeviceD3D(HWND hWnd)
