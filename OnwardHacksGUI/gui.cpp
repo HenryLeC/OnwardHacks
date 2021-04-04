@@ -260,8 +260,10 @@ int mainGUI()
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
-            //ImGui::Text("Enter Spoofed Name: %s", SpoofedName);
-            //ImGui::InputText("###Spoof", SpoofedName, IM_ARRAYSIZE(SpoofedName));
+            ImGui::Checkbox("Spoof Name", &SpoofName);
+            if (SpoofName == true) {
+            ImGui::Text("Enter Spoofed Name: %s", sSpoofName);
+            ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));
             ImGui::Unindent();
             ImGui::Text("");
 
@@ -315,7 +317,9 @@ int mainGUI()
 
     return 0;
 }
-
+void enter() {
+    //lololol
+}
 // Helper functions
 
 bool CreateDeviceD3D(HWND hWnd)

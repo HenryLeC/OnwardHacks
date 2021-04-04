@@ -20,7 +20,8 @@ bool InfiniteAmmo = false;
 
 // Spoofing
 bool SteamIDSpoofer = false;
-char SpoofedName[128] = "";
+bool SpoofName = false;
+char sSpoofName[128] = "";
 
 // Others
 bool InfinitePoints = false;
