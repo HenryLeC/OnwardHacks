@@ -231,7 +231,10 @@ uintptr_t __fastcall hkGetSteamID(uintptr_t pThis) {
 // GetName
 char* __fastcall hkGetName(uintptr_t pThis) {
 	char* Name = oGetName(pThis);
-	if (SpoofName) {
+	if (SpoofName && ColoredName) {
+		Name = sSpoofedNameColored;
+	}
+	else if (SpoofName) {
 		Name = sSpoofName;
 	}
 	return Name;

@@ -22,6 +22,8 @@ bool InfiniteAmmo = false;
 bool SteamIDSpoofer = false;
 bool SpoofName = false;
 char sSpoofName[128] = "";
+bool ColoredName = false;
+char sSpoofedNameColored[128] = "";
 
 // Others
 bool InfinitePoints = false;

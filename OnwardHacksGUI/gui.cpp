@@ -8,6 +8,7 @@
 #include "HacksSettings.h"
 #include <string>
 #include "ini.h"
+#include <iostream>
 #pragma comment(lib, "d3d9.lib")
 
 // Data
@@ -153,6 +154,18 @@ void saveConfig() {
     file.write(ini, true);
 }
 
+std::string rgb2hex(float r, float g, float b) {
+    int iR, iG, iB;
+    iR = r * 255.0f;
+    iG = g * 255.0f;
+    iB = b * 255.0f;
+
+    std::stringstream ss;
+    ss << "#";
+    ss << std::hex << (iR << 16 | iG << 8 | iB);
+    return ss.str();
+}
+
 // Main) code
 int mainGUI()
 {
@@ -266,26 +279,20 @@ int mainGUI()
             ImGui::Indent();
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
             ImGui::Checkbox("Spoof Name", &SpoofName);
-            bool WantedColor;
-            static ImVec4 color = ImVec4(255, 255, 255, 100);
-            static char hex[128];
-            static char sSpoofedNameColored[128];
-            std::string hexStr(hex);
-            int r, g, b;
+            static ImVec4 color = ImVec4(1, 1, 1, 1);
+            static int r, g, b;
             if (SpoofName == true) {
-                ImGui::Checkbox("Would you like a coloured name?", &WantedColor);
-                if (WantedColor == true) {
-                    ImGuiColorEditFlags misc_flags = ImGuiColorEditFlags_DisplayHex | ImGuiColorEditFlags_PickerHueWheel;
+                ImGui::Checkbox("Would you like a coloured name?", &ColoredName);
+                if (ColoredName == true) {
+                    ImGuiColorEditFlags misc_flags = ImGuiColorEditFlags_PickerHueWheel | ImGuiColorEditFlags_NoInputs;
                     ImGui::ColorPicker3("###picker", (float*)&color, misc_flags);
-                    ImGui::InputText("###hex", hex, IM_ARRAYSIZE(hex));
-                    std::string sNameColored = "<" + hexStr + ">" + sSpoofName + "</color>";
+                    std::string sNameColored = "<" + rgb2hex(color.x, color.y, color.z) + ">" + sSpoofName + "</color>";
                     strcpy_s(sSpoofedNameColored, sNameColored.length() + 1, sNameColored.c_str());
                 }
                 ImGui::Text("Enter Spoofed Name:");
-                if (WantedColor == true)
+                if (ColoredName == true)
                 {
-                    sscanf_s(hex, "%02x%02x%02x", &r, &g, &b);
-                    ImGui::TextColored(ImVec4(r,g,b,255), sSpoofName);
+                    ImGui::TextColored(color, sSpoofName);
                 }
                 else
                     ImGui::Text(sSpoofName);
