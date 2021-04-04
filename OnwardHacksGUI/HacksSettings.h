@@ -19,7 +19,8 @@ extern bool InfiniteAmmo;
 
 // Spoofing
 extern bool SteamIDSpoofer;
-extern char SpoofedName[128];
+extern bool SpoofName;
+extern char sSpoofName[128];
 
 // Others
 extern bool InfinitePoints;
