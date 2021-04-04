@@ -183,7 +183,6 @@ int mainGUI()
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
     ImGui_ImplDX9_Init(g_pd3dDevice);
-
     loadConfig();
 
     // Main loop
@@ -212,6 +211,7 @@ int mainGUI()
         ImGui::NewFrame();
         ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.00f);
         {
+            ImGui::ShowDemoWindow();
             //Important
             ImGui::Begin("OnwardHax");
             ImGui::StyleColorsDark;
@@ -262,8 +262,10 @@ int mainGUI()
             ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
             ImGui::Checkbox("Spoof Name", &SpoofName);
             if (SpoofName == true) {
+            static int item_current_2 = 0;
+            ImGui::Combo("lololol", &item_current_2, "red\0blue\0green\0yellow\0purple\0\0");
             ImGui::Text("Enter Spoofed Name: %s", sSpoofName);
-            ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));
+            ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));}
             ImGui::Unindent();
             ImGui::Text("");
 
@@ -317,9 +319,7 @@ int mainGUI()
 
     return 0;
 }
-void enter() {
-    //lololol
-}
+
 // Helper functions
 
 bool CreateDeviceD3D(HWND hWnd)
