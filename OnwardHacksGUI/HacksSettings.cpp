@@ -23,6 +23,7 @@ bool SteamIDSpoofer = false;
 bool SpoofName = false;
 char sSpoofName[128] = "";
 bool ColoredName = false;
+bool BlankName = false;
 char sSpoofedNameColored[128] = "";
 
 // Others

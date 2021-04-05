@@ -275,6 +275,7 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="OnwardHacksGUI.cpp" />
+    <ClCompile Include="guiBlatant.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gui.h" />
