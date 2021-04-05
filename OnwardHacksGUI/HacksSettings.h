@@ -22,6 +22,7 @@ extern bool SteamIDSpoofer;
 extern bool SpoofName;
 extern char sSpoofName[128];
 extern bool ColoredName;
+extern bool BlankName;
 extern char sSpoofedNameColored[128];
 
 // Others
