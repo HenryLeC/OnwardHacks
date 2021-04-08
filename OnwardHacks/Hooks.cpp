@@ -92,6 +92,16 @@ uintptr_t SetNameText_offset = 0x12AA500;
 tUpdateMe oUpdateMe;
 uintptr_t UpdateMe_offset = 0x12ACE30;
 
+tSetLocalPlayerName oSetLocalPlayerName;
+uintptr_t SetLocalPlayerName_offset = 0x12FD1E0;
+
+// Helmets Not Available
+tVolkNotAvailable oVolkNotAvailable;
+uintptr_t VolkNotAvailable_offset = 0x3A4E00;
+
+tMarsocNotAvailable oMarsocNotAvailable;
+uintptr_t MarsocNotAvailable_offset = 0x3A4A70;
+
 // SetOutlineActive
 void __fastcall hkSetOutlineActive(uintptr_t pThis, bool active) {
 	if (ESP) {
@@ -231,10 +241,13 @@ uintptr_t __fastcall hkGetSteamID(uintptr_t pThis) {
 // GetName
 char* __fastcall hkGetName(uintptr_t pThis) {
 	char* Name = oGetName(pThis);
-	if (SpoofName && ColoredName) {
+	/*if (SpoofName && ColoredName) {
 		Name = sSpoofedNameColored;
 	}
 	else if (SpoofName) {
+		Name = sSpoofName;
+	}*/
+	if (SpoofName) {
 		Name = sSpoofName;
 	}
 	return Name;
@@ -320,7 +333,7 @@ void KillRegPatch() {
 
 // isDeveloper
 bool __fastcall hkisDeveloper(uintptr_t pThis) {
-	bool ret =  oisDeveloper(pThis);
+	bool ret = oisDeveloper(pThis);
 	if (DevMode)
 		ret = true;
 	return ret;
@@ -358,4 +371,19 @@ void __fastcall hkWarPlayerAwake(uintptr_t pThis) {
 	if (photonPlayer != 0) {
 		oUpdateMe(pThis, photonPlayer);
 	}
+}
+
+void __fastcall hkSetLocalPlayerName(uintptr_t pThis, const char* name) {
+	if (name != 0) {
+		name = "Hello";
+	}
+	oSetLocalPlayerName(pThis, "Hello");
+}
+
+void __fastcall hkVolkNotAvailable(uintptr_t pThis) {
+	return;
+}
+
+void __fastcall hkMarsocNotAvailable(uintptr_t pThis) {
+	return;
 }

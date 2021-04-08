@@ -131,6 +131,26 @@ extern uintptr_t IsQaBuild_offset;
 
 bool __fastcall hkIsQaBuild(uintptr_t pThis);
 
+// Set_LocalPlayerName
+typedef void(__fastcall* tSetLocalPlayerName)(uintptr_t, const char*);
+extern tSetLocalPlayerName oSetLocalPlayerName;
+extern uintptr_t SetLocalPlayerName_offset;
+
+void __fastcall hkSetLocalPlayerName(uintptr_t pThis, const char* name);
+
+// Volk Helmet Not available
+typedef void(__fastcall* tVolkNotAvailable)(uintptr_t);
+extern tVolkNotAvailable oVolkNotAvailable;
+extern uintptr_t VolkNotAvailable_offset;
+
+void __fastcall hkVolkNotAvailable(uintptr_t pThis);
+
+// Marsoc Helmet Not available
+typedef void(__fastcall* tMarsocNotAvailable)(uintptr_t);
+extern tMarsocNotAvailable oMarsocNotAvailable;
+extern uintptr_t MarsocNotAvailable_offset;
+
+void __fastcall hkMarsocNotAvailable(uintptr_t pThis);
 
 // Steam ID Registry Edit
 void EditRegKeys();
