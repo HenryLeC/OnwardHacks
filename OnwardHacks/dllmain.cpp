@@ -95,6 +95,12 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 
 		oGetName = (tGetName)(assemblyAddress + GetName_offset);
 
+		oSetLocalPlayerName = (tSetLocalPlayerName)(assemblyAddress + SetLocalPlayerName_offset);
+
+		oVolkNotAvailable = (tVolkNotAvailable)(assemblyAddress + VolkNotAvailable_offset);
+
+		oMarsocNotAvailable = (tMarsocNotAvailable)(assemblyAddress + MarsocNotAvailable_offset);
+
 		// Attach Detours
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
@@ -110,6 +116,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourAttach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
 		//DetourAttach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
 		DetourAttach(&(PVOID&)oGetName, hkGetName);
+		//DetourAttach(&(PVOID&)oSetLocalPlayerName, hkSetLocalPlayerName);
+		//DetourAttach(&(PVOID&)oVolkNotAvailable, hkVolkNotAvailable);
+		//DetourAttach(&(PVOID&)oMarsocNotAvailable, hkMarsocNotAvailable);
 
 		LONG lError = DetourTransactionCommit();
 
@@ -140,6 +149,9 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 		DetourDetach(&(PVOID&)oIsQaBuild, hkIsQaBuild);
 		//DetourDetach(&(PVOID&)oCheckIfAllowedOnTeam, hkCheckIfAllowedOnTeam);
 		DetourDetach(&(PVOID&)oGetName, hkGetName);
+		//DetourDetach(&(PVOID&)oSetLocalPlayerName, hkSetLocalPlayerName);
+		//DetourDetach(&(PVOID&)oVolkNotAvailable, hkVolkNotAvailable);
+		//DetourDetach(&(PVOID&)oMarsocNotAvailable, hkMarsocNotAvailable);
 
 		LONG lError = DetourTransactionCommit();
 

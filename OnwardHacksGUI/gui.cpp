@@ -281,9 +281,9 @@ int mainGUI()
 			ImGui::TextColored(ImVec4(1, 0, 0, 1), "Spoofing:");
 			ImGui::Indent();
 			ImGui::Checkbox("SteamID Spoofer enabled", &SteamIDSpoofer);
-			ImGui::Checkbox("Spoof Name", &SpoofName);
+			ImGui::Checkbox("Blank Name", &SpoofName);
 			static ImVec4 color = ImVec4(1, 1, 1, 1);
-			if (SpoofName == true) {
+			/*if (SpoofName == true) {
 				ImGui::Indent();
 				ImGui::Checkbox("Would you like a blank name?", &BlankName);
 				if (BlankName)
@@ -311,7 +311,7 @@ int mainGUI()
 					ImGui::InputText("###Spoof", sSpoofName, IM_ARRAYSIZE(sSpoofName));
 					ImGui::Unindent();
 				}
-			}
+			}*/
 			ImGui::Unindent();
 			ImGui::Text("");
 
