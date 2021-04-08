@@ -186,7 +186,7 @@ void __fastcall hkFireWeapon(uintptr_t weapon, uintptr_t PlayerSource, uintptr_t
 	}
 
 	if (FastBurst) {
-		for (int i = iFastBurst - 1; i <= 5; i++) {
+		for (int i = 0; i <= iFastBurst - 1; i++) {
 			oFireWeapon(weapon, PlayerSource, forward, aiSourceId);
 		}
 	}
