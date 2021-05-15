@@ -1,5 +1,7 @@
 # Onward Hacks
 
+### Onward has implemented anticheat. Injecting these hacks will cause you to be instantly banned. Use them at your own risk
+
 ## Features
 * ESP ✔
 * Auto-Cap ✔
@@ -9,8 +11,8 @@
 * Max Rate Of Fire ✔
 * 6 Round Burst ✔
 * Infinite Ammo ✔
-* Steam ID Spoofer
-* Steam Name Spoofer
+* Steam ID Spoofer ✔
+* Steam Name Blanker ✔
 * Infinite Points ✔
 * All Marker Colors ✔
 * Full Lobby Bypass ✔
